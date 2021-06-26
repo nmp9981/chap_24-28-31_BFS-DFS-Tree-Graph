@@ -1,0 +1,32 @@
+import sys 
+sys.setrecursionlimit(10**6) #재귀깊이 늘려줌(dps시 참고)
+from collections import deque
+
+#bfs
+def bfs(x,y):
+  q = deque()
+  q.append([x,y])
+  while q:
+    [x,y] = q.popleft()
+    for i in range(4): #4군데에 큐 담기
+      nx = x + dx[i]
+      ny = y + dy[i]
+      if 0 <= nx < n and 0 <= ny < m and matrix[nx][ny] == 1:#한번도 방문하지 않음
+        q.append([nx,ny])
+        matrix[nx][ny] += matrix[x][y] #이전값을 추가함
+
+#위치변수
+dx = [0,0,1,-1]
+dy = [1,-1,0,0]
+
+#입력
+n,m = map(int, input().split())
+#지도생성
+matrix = []
+for i in range(n):
+  from_n = list(map(int, input()))
+  matrix.append(from_n)
+
+#미로찾기
+bfs(0,0)
+print(matrix[-1][-1])
