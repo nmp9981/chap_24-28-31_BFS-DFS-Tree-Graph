@@ -1,0 +1,48 @@
+import sys 
+sys.setrecursionlimit(10**6) #재귀깊이 늘려줌(dps시 참고)
+from collections import deque
+
+#bfs
+def bfs():
+  while q:
+    [x,y] = q.popleft()
+    for i in range(4): #4군데에 큐 담기
+      nx = x + dx[i]
+      ny = y + dy[i]
+      if 0 <= nx < m and 0 <= ny < n and matrix[nx][ny] == 0:#한번도 방문하지 않음
+        matrix[nx][ny] = matrix[x][y]+1 #이제 토마토가 익어 1로 변경처리
+        q.append([nx,ny])
+  
+#위치변수
+dx = [0,0,1,-1]
+dy = [1,-1,0,0]
+
+#입력
+n,m = map(int, input().split())
+#지도생성
+matrix = []
+for i in range(m):
+  from_n = list(map(int, input().split()))
+  matrix.append(from_n)
+
+#미로찾기, 값이 1인 요소들을 큐에 다담기 (동시 진행을 위한)
+q = deque()
+for i in range(m):
+  for j in range(n):
+    if matrix[i][j] == 1: #이미 익은 토마토, 첫기준
+      q.append([i,j])
+
+#bfs함수 실행
+bfs()
+
+#며칠소요되는가?
+day = 0
+for i in range(m):
+  for j in range(n):
+    if day < matrix[i][j]:
+      day = matrix[i][j]
+    if matrix[i][j] == 0:
+      print(-1)
+      exit()
+    day = max(day,1) #day = 0이면 1
+print(day-1) # matrix[x][y] 가 1에서 시작하기 때문 (익은 토마토를 1로 표현하다보니 생긴 사항)
