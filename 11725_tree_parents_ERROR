@@ -1,0 +1,31 @@
+import sys 
+sys.setrecursionlimit(10**9) #재귀깊이 늘려줌(dps시 참고)
+
+#입력
+n = int(input())
+#인접행렬
+matrix = [[0]*(n+1) for i in range(n+1)] #최대범위 고려
+for i in range(1,n):
+  a,b = map(int, input().split())
+  matrix[a][b] = matrix[b][a] = 1
+
+#방문리스트
+visit = [0]*(n+1)
+
+#부모느드 기록
+li = []
+
+#dfs
+def dfs(x):
+  visit[x] = 1
+  for i in range(1,n+1):
+    if visit[i] == 0 and matrix[x][i] == 1: #아직 방문 안함 , 연결되었다면
+      li.append([i,x]) #자식노드, 부모노드
+      dfs(i)
+
+dfs(1) #1번부터 시작
+
+#출력
+li.sort() #리스트 정렬(첫열인 자식노드 기준)
+for i in range(0,n-1):
+  print(li[i][1])
