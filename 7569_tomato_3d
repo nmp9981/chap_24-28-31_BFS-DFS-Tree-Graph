@@ -1,0 +1,55 @@
+import sys 
+sys.setrecursionlimit(10**6) #재귀깊이 늘려줌(dps시 참고)
+from collections import deque
+
+#bfs
+def bfs():
+  while q:
+    [z,y,x] = q.popleft()
+    for i in range(6): #6군데에 큐 담기
+      nx = x + dx[i]
+      ny = y + dy[i]
+      nz = z + dz[i]
+      if 0 <= nx < n and 0 <= ny < m and 0 <= nz < h and matrix[nz][ny][nx] == 0:#한번도 방문하지 않음
+        matrix[nz][ny][nx] = matrix[z][y][x] + 1 #이제 토마토가 익어 1로 변경처리
+        q.append([nz,ny,nx])
+  
+#위치변수
+dx = [0,0,1,-1,0,0]
+dy = [1,-1,0,0,0,0]
+dz = [0,0,0,0,1,-1]
+
+#입력
+n,m,h = map(int, input().split())
+#지도생성
+matrix = []
+for j in range(h):
+  mat = []
+  for i in range(m):
+    a = list(map(int, input().split()))
+    mat.append(a)
+  matrix.append(mat)
+
+#미로찾기, 값이 1인 요소들을 큐에 다담기 (동시 진행을 위한)
+q = deque()
+for i in range(h):
+  for j in range(m):
+    for k in range(n):
+      if matrix[i][j][k] == 1: #이미 익은 토마토, 첫기준
+        q.append([i,j,k])
+
+#bfs함수 실행
+bfs()
+
+#며칠소요되는가?
+day = 0
+for i in range(h):
+  for j in range(m):
+    for k in range(n):
+      if day < matrix[i][j][k]:
+        day = matrix[i][j][k]
+      if matrix[i][j][k] == 0:
+        print(-1)
+        exit()
+      day = max(day,1)
+print(day-1)
