@@ -1,0 +1,31 @@
+import sys 
+sys.setrecursionlimit(10**6) #재귀깊이 늘려줌(dps시 참고)
+from collections import deque
+
+#dfs
+def dfs(x):
+  global team
+  visit[x] = 1 #방문한 정점 기록
+  cycle.append(x) #탐색 경로 저장
+
+  w = li[x] #다음 방문할 정점
+  if visit[w] == 1: #이미 방문 함
+    if w in cycle: #다음 방문 지점이 존재하면 순환
+      team += cycle[cycle.index(w):] #사이클이 되는 구간부터만 팀을 이룸
+  else: #방문을 안했다면
+    dfs(w) #탐색 진행
+#입력
+t = int(input())
+for i in range(t):
+  n = int(input())
+  li = [0] + list(map(int, input().split())) #편의를 위해 0 추가
+
+  visit = [0]*(n+1) #방문 정점
+  team = [] #팀을 구한 학생수
+  
+  for j in range(1,n+1): #1번부터 탐색
+    if visit[j] == 0:
+      cycle = []
+      dfs(j)
+  #남은 인원수
+  print(n - len(team))
