@@ -1,0 +1,41 @@
+import sys
+sys.setrecursionlimit(99999999) #재귀 깊이 늘려줌 
+
+#dfs
+def dfs(x,visit):
+  for i in range(len(matrix[x])):
+    end,dis = matrix[x][i]
+    if visit[end] == 0: #아직 미방문
+      visit[end] = visit[x] + dis #이전노드 + 거리
+      dfs(end, visit)
+
+#입력
+n = int(input())
+matrix = [[] for i in range(n+1)]
+#트리구현
+for i in range(1,n):
+  a,b,c = map(int, input().split())
+  matrix[a].append([b,c])
+  matrix[b].append([a,c])
+  
+#방문노드
+visit = [0]*(n+1)
+result = [0]*(n+1)
+
+#dfs
+dfs(1,visit) #한노드를 정하고 가장 깊은 노드 탐색
+visit[1] = 0
+#가장 깊은 노드
+maxi = 0
+index = 0
+
+#가장 깊은 노드의 인덱스 구하기
+for i in range(len(visit)):
+  if maxi < visit[i]:
+    maxi = visit[i]
+    index = i
+
+#해당노드에서 가장 깊은 노드
+dfs(index,result)
+result[index] = 0
+print(max(result))
