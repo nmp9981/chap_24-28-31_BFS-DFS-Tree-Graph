@@ -1,0 +1,45 @@
+
+from collections import deque
+
+#bfs
+def bfs(start):
+  visit[start] = 1
+  q = deque()
+  q.append(start)
+  while q:
+    x = q.popleft()
+    for i in matrix[x]:
+      if visit[i] == 0: #미방문 했다면
+        visit[i] = -visit[x] #1이 시작일때 1과 연결된 정점을 -1로 바꿈
+        q.append(i)
+      else:
+        if visit[i] == visit[x]:#같은 그룹끼리 연결
+          return False
+  return True
+
+#입력
+t = int(input())
+for i in range(t):
+  v,e = map(int, input().split())
+  matrix = [[] for i in range(v+1)] #빈 그래프
+  visit = [0]*(v+1) #방문 정점
+  #무방향 그래프
+  for j in range(e):
+    a,b = map(int, input().split())
+    matrix[a].append(b)
+    matrix[b].append(a)
+
+  bipatite = True
+
+  #방문정점 순회
+  for i in range(1,v+1):
+    if visit[i] == 0: #아직 미방문
+      bipatite = bfs(i)
+      if bipatite == False:
+        break
+  
+  #출력
+  if bipatite == True:
+    print('YES')
+  else:
+    print('NO')
