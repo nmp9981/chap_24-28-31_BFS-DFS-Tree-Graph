@@ -1,0 +1,28 @@
+#입력
+n = int(input())
+money = list(map(int, input().split()))
+money.sort()
+total = int(input())
+
+#총 지급액
+def limit(x):
+	sum = 0
+	for i in money:
+		if i <= x:
+			sum += i
+		else:
+			sum += x
+	return sum
+	
+#이분탐색
+start = 1
+end = money[-1]
+while start <= end:
+	mid = (start + end)//2 #돈의 상한
+	if limit(mid) <= total:
+		start = mid + 1
+	else:
+		end = mid - 1
+
+#결과
+print(end) 
