@@ -1,0 +1,40 @@
+import sys
+sys.setrecursionlimit(10**9)
+
+#dfs
+def dfs(x, result):
+	for i in range(len(matrix[x])):
+		end, dis = matrix[x][i] #트리구현시 2개씩 matrix에 넣기
+		if result[end] == 0:#아직 미방문
+			result[end] = result[x] + dis#이전노드 + 거리
+			dfs(end, result)
+#입력
+v = int(input())
+matrix = [[] for i in range(v+1)]
+
+#트리구현
+for _ in range(v):
+	path = list(map(int, input().split()))
+	#2개씩 matrix에 넣기
+	for i in range(1,len(path)//2):
+		matrix[path[0]].append([path[2*i-1], path[2*i]])
+
+#방문노드 dfs를 2번해야함
+result1 = [0]*(v+1)
+result2 = [0]*(v+1)
+
+dfs(1,result1)
+result1[1] = 0 #루트가 정해져 있지않아 양방향 입력
+
+#가장 깊은 노드의 인덱스 구하기
+maxi = 0
+index = 0
+for i in range(len(result1)):
+	if maxi < result1[i]:
+		maxi = result1[i]
+		index = i
+
+#해당 노드에서 가장 깊은 노드
+dfs(index, result2)
+result2[index] = 0
+print(max(result2))
