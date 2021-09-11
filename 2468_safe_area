@@ -1,0 +1,75 @@
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+
+int map[100][100];
+int map_ori[100][100];
+int cnt;
+int n;
+int dx[] = {-1,1,0,0};
+int dy[] = {0,0,-1,1};
+
+bool dfs(int x,int y,int high){
+  //범위를 넘는다면 탐색종료
+  if(x<0 || x>=n || y<0 || y>=n){
+    return false;
+  }
+
+  //k->0
+  if(map[x][y] > high){//아직 미방문
+    map[x][y] = 0;
+    cnt ++;
+    for(int i=0;i<4;i++){
+      int nx = x + dx[i];
+      int ny = y + dy[i];
+      dfs(nx,ny,high);
+    }
+  }
+  return true;
+}
+
+int main(){
+  //입력
+  cin>>n;
+  //지도 만들기
+  for(int i=0;i<n;i++){
+    for(int j=0;j<n;j++){
+      cin>> map_ori[i][j];
+    }
+  }
+
+  vector<int> area;
+  for(int k=0;k<=100;k++){//강수량
+    int land = 0;
+    //지도 초기화
+    for(int i=0;i<n;i++){
+      for(int j=0;j<n;j++){
+        map[i][j] = map_ori[i][j];
+      }
+    }
+    //지도를 순회하면서 k->0
+    for(int i=0;i<n;i++){
+      for(int j=0;j<n;j++){
+        if(dfs(i,j,k)==true && cnt>=1){
+          land ++;
+          cnt = 0;
+        }
+      }
+    }
+    area.push_back(land);
+  }
+  //결과 출력
+  cout<<*max_element(area.begin(),area.end())<<endl;
+  return 0;
+}
