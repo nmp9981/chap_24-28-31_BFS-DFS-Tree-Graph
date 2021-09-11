@@ -1,0 +1,111 @@
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+
+string map[100][100];
+string map_ori[100][100];
+int cnt;
+int n;
+int dx[] = {-1,1,0,0};
+int dy[] = {0,0,-1,1};
+string rgb[] = {"R","G","B"};
+
+bool dfs(int x,int y,string color){
+  //범위를 넘는다면 탐색종료
+  if(x<0 || x>=n || y<0 || y>=n){
+    return false;
+  }
+
+  //k->0
+  if(map[x][y] == color){//아직 미방문
+    map[x][y] = "0";
+    cnt ++;
+    for(int i=0;i<4;i++){
+      int nx = x + dx[i];
+      int ny = y + dy[i];
+      dfs(nx,ny,color);
+    }
+  }
+  return true;
+}
+
+int main(){
+  //입력
+  cin>>n;
+  //지도 만들기(인접 행렬)
+  string line;
+  for(int i=0;i<n;i++){
+    cin>>line;
+    for(int j=0;j<n;j++){
+      map_ori[i][j] = line[j];
+    }
+  }
+
+  vector<int> colors;
+  //색약이 아닌 경우
+  for(int k=0;k<3;k++){
+
+    //지도 초기화
+    for(int i=0;i<n;i++){
+      for(int j=0;j<n;j++){
+        map[i][j] = map_ori[i][j];
+      }
+    }
+
+    int col = 0;
+    //지도를 순회하면서 k->0
+    for(int i=0;i<n;i++){
+      for(int j=0;j<n;j++){
+        if(dfs(i,j,rgb[k])==true && cnt>=1){
+          col ++;
+          cnt = 0;
+        }
+      }
+    }
+    //각 영역의 수
+    colors.push_back(col); 
+  }
+
+  //색약인 경우
+  //지도 초기화
+  for(int i=0;i<n;i++){
+    for(int j=0;j<n;j++){
+      if(map_ori[i][j] == "B"){
+        map[i][j] = "B";
+      }else{
+        map[i][j] = "X";
+      }
+    }
+  }
+
+  int bluex = 0;
+  //지도를 순회하면서 k->0
+  for(int i=0;i<n;i++){
+    for(int j=0;j<n;j++){
+      if(dfs(i,j,"X")==true && cnt>=1){
+        bluex ++;
+        cnt = 0;
+      }
+    }
+  }
+
+  //출력
+  int result1 = 0;
+  for(int i=0;i<3;i++){
+    result1 += colors[i];
+  }
+  int result2 = colors[2] +bluex;
+  cout<<result1<<" "<<result2<<endl;
+  return 0;
+}
