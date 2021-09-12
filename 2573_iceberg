@@ -1,0 +1,124 @@
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+
+int n,m,cnt;
+int map[300][300];
+int zero[300][300];//빙하높이 중복계산 방지
+int map_ori[300][300];
+int dx[] = {-1,1,0,0};
+int dy[] = {0,0,-1,1};
+
+//dfs
+bool dfs(int x,int y){
+  //범위를 벗어난 경우(행,열 주의)
+  if(x<0 || x>=n || y<0 || y>=m){
+    return false;
+  }
+
+  //1->0
+  if(map[x][y] > 0){//아직 미방문
+    map[x][y] = 0;
+    cnt ++;
+    for(int i=0;i<4;i++){
+      int nx = x + dx[i];
+      int ny = y + dy[i];
+      dfs(nx,ny);
+    }
+  }
+  return true;
+}
+
+int main(){
+  
+  //입력
+  cin>>n>>m;
+  //지도 입력
+  for(int i=0;i<n;i++){
+    for(int j=0;j<m;j++){
+      cin>>map_ori[i][j];
+    }
+  }
+
+  int year = 0;
+  while(true){
+    //지도 갱신(맨 처음)
+    if(year == 0){
+      //원래대로
+      for(int i=0;i<n;i++){
+        for(int j=0;j<m;j++){
+          map[i][j] = map_ori[i][j];
+        }
+      }
+    }else{
+      //원래대로, 초기화
+      for(int i=0;i<n;i++){
+        for(int j=0;j<m;j++){
+          map[i][j] = map_ori[i][j];
+          zero[i][j] = 0;//초기화
+        }
+      }
+
+      //동서남북0의 개수
+      for(int i=1;i<n-1;i++){
+        for(int j=1;j<m-1;j++){
+          for(int k=0;k<4;k++){
+            if(map[i+dx[k]][j+dy[k]] == 0){
+              zero[i][j]++;
+            }
+          }
+        }
+      }
+      //지도 갱신
+      for(int i=1;i<n-1;i++){
+        for(int j=1;j<m-1;j++){
+          map_ori[i][j] = max(0,map_ori[i][j]-zero[i][j]);
+          map[i][j] = map_ori[i][j];
+        }
+      }
+    }
+
+    //계속 1덩어리 이하
+    int ice = 0;
+    for(int i=0;i<n;i++){
+      for(int j=0;j<m;j++){
+        if(map[i][j] > 0){
+          ice ++;
+        }
+      }
+    }
+    if(ice == 0){//종료
+      cout<<0<<endl;
+      return 0;
+    }
+
+    //지도 순회
+    int area = 0;
+    for(int i=0;i<n;i++){
+      for(int j=0;j<m;j++){
+        if(dfs(i,j)==true && cnt>=1){
+          area ++ ;
+          cnt = 0;
+        }
+      }
+    }
+    
+    //출력
+    if(area>=2){
+      cout<<year<<endl;
+      return 0;
+    }
+    year ++;
+  }
+}
