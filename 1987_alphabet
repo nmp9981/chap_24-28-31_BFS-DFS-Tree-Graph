@@ -1,0 +1,73 @@
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+
+int n,m;
+int map[20][20];
+int alphabet[26];
+int cnt = 1;//첫점 방문
+int ans = 0;
+int dx[] = {-1,1,0,0};
+int dy[] = {0,0,-1,1};
+
+//dfs
+bool dfs(int x,int y){
+  ans = max(ans,cnt);//최댓값 갱신
+  
+  for(int i=0;i<4;i++){
+    int nx = x + dx[i];
+    int ny = y + dy[i];
+
+    //범위를 벗어나는가?
+    if(nx<0 || nx>=n || ny<0 || ny>=m){
+      continue;
+    }
+    //초기화용
+    int cnt_init = cnt;
+
+    if(alphabet[map[nx][ny]-'A'] != 1){//겹치는 알파벳이 없으면
+      alphabet[map[nx][ny]-'A'] = 1;
+      cnt++;
+      dfs(nx,ny);
+      //다돌았으면 원래대로
+      alphabet[map[nx][ny]-'A'] = 0;
+      cnt = cnt_init;
+    }
+  }
+  
+  return true;
+}
+
+int main(){
+  int year = 0;
+  cin>>n>>m;
+
+   //지도 입력
+  for(int i=0;i<n;i++){
+    string line;
+    cin>>line;
+    for(int j=0;j<m;j++){
+      map[i][j] = line[j]-'A';
+    }
+  }
+
+  //지도순회
+  alphabet[map[0][0]-'A'] = 1;//첫점은 이미 방문
+  dfs(0,0);//0,0에서 시작
+
+  //출력
+  cout<<ans<<endl;
+  
+  return 0;
+}
