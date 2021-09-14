@@ -1,0 +1,59 @@
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+
+int n,m,start,goal;
+int connect[100][100];
+int visit[101];
+int ans = -1;//불가능할 경우를 대비
+
+//dfs
+void dfs(int start,int goal,int depth){
+  visit[start] = 1;//방문
+  //만약 목표지점에 도달
+  if(start == goal){
+    ans = depth;
+  }
+  
+  //다음지점으로
+  for(int i=1;i<=n;i++){
+    int next = connect[start][i];
+    //다음지점이 있고 미방문이면
+    if(next == 1 && visit[i] == 0){
+      dfs(i,goal,depth+1);
+    }
+  }
+}
+
+int main(){
+  cin.tie(0);
+  cout.tie(0);
+
+  cin>>n;
+  cin>>start>>goal;
+  cin>>m;
+
+  //인접 행렬 입력
+  for(int i=0;i<m;i++){
+    int parents,child;
+    cin>>parents>>child;
+    connect[parents][child] = 1;
+    connect[child][parents] = 1;
+  }
+
+  dfs(start,goal,0);
+  
+  cout<<ans<<endl;
+  return 0;
+}
