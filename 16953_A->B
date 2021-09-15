@@ -1,0 +1,62 @@
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+
+long long n,k;
+long long maxi = 1000000000;
+long long ans = -1;
+queue<pair<long long,long long>> q;
+
+void bfs(){
+  while(!q.empty()){
+    //현재원소 꺼내기
+    long long x = q.front().first;
+    long long cnt = q.front().second;
+    q.pop();
+
+    //목표도달
+    if(x == k){
+      ans = cnt;
+      break;
+    }
+
+    //연산하기
+    for(int i=0;i<2;i++){
+      long long nx;
+      if(i==0){
+        nx = 2*x;
+      }else{
+        nx = 10*x + 1;
+      }
+
+      //범위내에 있음
+      if(nx<=maxi){
+        q.push(make_pair(nx,cnt+1));//다음 탐색을 위해 큐에 넣음
+      }
+    }
+  }
+  cout<<ans<<"\n";
+}
+
+int main(){
+  cin.tie(0);
+  cout.tie(0);
+
+  cin>>n>>k;
+
+  //맨 처음 먼저 넣고
+  q.push(make_pair(n,1));
+  bfs();
+  return 0;
+}
