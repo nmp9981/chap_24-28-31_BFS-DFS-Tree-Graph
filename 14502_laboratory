@@ -1,0 +1,136 @@
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+
+int n,m;
+int map[8][8];//원래 지도
+int map_ori[8][8];//이동 지도
+int dx[] = {-1,1,0,0};
+int dy[] = {0,0,-1,1};
+
+int bfs(){
+  queue<pair<int,int>> q;
+  //바이러스 시작점을 모두 큐에 넣기(동시탐색))
+  for(int i=0;i<n;i++){
+    for(int j=0;j<m;j++){
+      map_ori[i][j] = map[i][j];//초기화
+      if(map_ori[i][j]==2){
+        q.push({i,j});
+      }
+    }
+  }
+  while(!q.empty()){
+    //현재 위치
+    int x = q.front().first;
+    int y = q.front().second;
+    q.pop();
+
+    //4방향 탐색
+    for(int i=0;i<4;i++){
+      int nx = x + dx[i];
+      int ny = y + dy[i];
+      //범위내에 있다면
+      if(nx>=0 && nx<n && ny>=0 && ny<m){
+        //빈공간이 있음/미방문
+        if(map_ori[nx][ny] == 0){
+          map_ori[nx][ny] = 2;//감염
+          q.push({nx,ny});
+        }
+      }
+    }
+  }
+  //안전영역의 크기 구하기
+  int cnt=0;
+  for(int i=0;i<n;i++){
+    for(int j=0;j<m;j++){
+      if(map_ori[i][j]==0){
+        cnt++;
+      }
+    }
+  }
+  return cnt;
+}
+
+int main(){
+  cin.tie(0);
+  cout.tie(0);
+
+  //입력
+  cin>>n>>m;
+
+  //지도 입력
+  for(int i=0;i<n;i++){
+    for(int j=0;j<m;j++){
+      cin>>map[i][j];
+    }
+  }
+  int safe_max = 0;//안전영역 최대 크기
+
+  //벽세우기
+  for(int a1=0;a1<n;a1++){
+    for(int a2=0;a2<m;a2++){
+      //0인곳에만 벽 설치 가능
+      if(map[a1][a2]!=0){
+        //첫번째 벽을 설치하지 못하면 다음벽을 설치할 수 없음
+        continue;
+      }
+      for(int b1=0;b1<n;b1++){
+        for(int b2=0;b2<m;b2++){
+          if(map[b1][b2]!=0){
+            //두번째 벽을 설치하지 못하면 다음벽을 설치할 수 없음
+            continue;
+          }
+          for(int c1=0;c1<n;c1++){
+            for(int c2=0;c2<m;c2++){
+              if(map[c1][c2]!=0){
+                continue;
+              }
+
+              //좌표가 겹치면 안된다
+              if(a1==b1 && a2==b2){
+                continue;
+              }
+              if(a1==c1 && a2==c2){
+                continue;
+              }
+              if(c1==b1 && c2==b2){
+                continue;
+              }
+
+              //벽세우기
+              map[a1][a2] = 1;
+              map[b1][b2] = 1;
+              map[c1][c2] = 1;
+              
+              //바이러스 퍼뜨림
+              int safe = bfs();
+              //안전지대 영역 갱신
+              if(safe>safe_max){
+                safe_max = safe;
+              }
+              //초기화
+              map[a1][a2] = 0;
+              map[b1][b2] = 0;
+              map[c1][c2] = 0;  
+            }
+          }
+        }
+      }
+    }
+  }
+  //결과 출력
+  cout<<safe_max<<"\n";
+  return 0;
+}
+
