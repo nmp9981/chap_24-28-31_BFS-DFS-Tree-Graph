@@ -1,0 +1,92 @@
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+
+int n,m;
+string map_ori[50][50];
+string map[50][50];//맵원본
+int dx[] = {-1,1,0,0};
+int dy[] = {0,0,-1,1};
+int cnt = 1;
+int ans = 1;
+queue<pair<pair<int,int>,int>> q;
+
+void bfs(){
+    while(!q.empty()){
+        //현재위치 꺼내기
+        int x = q.front().first.first;
+        int y = q.front().first.second;
+        int cnt = q.front().second;
+        q.pop();
+        
+        //최대거리 갱신
+        ans = max(ans,cnt);
+        
+        //범위내에 있고 미방문
+        for(int i=0;i<4;i++){
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+            if(nx>=0 && nx<n && ny>=0 && ny<m){
+                if(map[nx][ny]=="L"){
+                    map[nx][ny]="W";
+                    q.push({{nx,ny},cnt+1});
+                }
+            }
+        }
+    }
+}
+
+int main()
+{   
+    cin.tie(0);
+    cout.tie(0);
+    //입력
+    cin>>n>>m;
+    string line;
+    for(int i=0;i<n;i++){
+        cin>>line;
+        for(int j=0;j<m;j++){
+            map_ori[i][j] = line[j];
+        }
+    }
+    //bfs탐색(맨처음값은 넣어줌)
+    for(int i=0;i<n;i++){
+        for(int j=0;j<m;j++){
+            if(map_ori[i][j]=="L"){
+                //큐 초기화
+                while(!q.empty()){
+                    q.pop();
+                }
+                //지도초기화
+                for(int i=0;i<n;i++){
+                    for(int j=0;j<m;j++){
+                        map[i][j] = map_ori[i][j];
+                    }
+                }
+                
+                //bfs
+                q.push({{i,j},0});
+                map[i][j] = "W";
+                bfs();
+            }
+            
+            
+        }
+    }
+    
+    //출력
+    cout<<ans;
+    
+    return 0;
+}
