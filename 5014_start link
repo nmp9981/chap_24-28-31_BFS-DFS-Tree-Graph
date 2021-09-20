@@ -1,0 +1,63 @@
+#include <iostream>
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+int f,s,g,u,d;
+int visit[1000001];//방문여부,맵
+queue<pair<int,int>> q;
+
+void bfs(){
+    while(!q.empty()){
+        //현재좌표
+        int x = q.front().first;
+        int cnt = q.front().second;
+        q.pop();
+        
+        //목표도달
+        if(x==g){
+            cout<<cnt<<"\n";
+            return;
+        }
+        
+        //업버튼누르기
+        //범위내에 있고 미방문이면
+        if(x+u<=f && visit[x+u]==0){
+            visit[x+u] = 1;
+            q.push({x+u,cnt+1});
+        }
+        //다운버튼누르기
+        //범위내에 있고 미방문이면
+        if(x-d>=1 && visit[x-d]==0){
+            visit[x-d] = 1;
+            q.push({x-d,cnt+1});
+        }
+    }
+    //불가능함
+    cout<<"use the stairs";
+}
+int main()
+{
+    //입력
+    cin>>f>>s>>g>>u>>d;
+    //초기화
+    for(int i=0;i<=1000000;i++){
+        visit[i] =0;
+    }
+    //맨처음 1개는 미리넣기
+    visit[s] = 1;
+    q.push({s,0});
+    bfs();
+
+    return 0;
+}
