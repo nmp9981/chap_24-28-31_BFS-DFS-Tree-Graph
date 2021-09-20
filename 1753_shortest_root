@@ -1,0 +1,77 @@
+#include <iostream>
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+int v,e,k;
+const int inf = 1000000000;
+vector<pair<int,int>> adj[20001];
+
+vector<int> dijkstra(int start,int vertex){
+    vector<int> distance(vertex,inf);//start기준으로 거리
+    distance[start] = 0;//자기자신
+    
+    priority_queue<pair<int,int>> pq;//우선순위큐, cost,vertex
+    pq.push({0,start});//비용, 정점
+    
+    while(!pq.empty()){
+        int cost = -pq.top().first;//비용이 작은것을 꺼냄
+        int curvertex = pq.top().second;//정점
+        pq.pop();
+        
+        //최소거리
+        if(distance[curvertex]<cost){
+            continue;//실제로는 더큼, 부호가 반대이므로
+        }
+        
+        //이웃다 확인
+        for(int i=0;i<adj[curvertex].size();i++){
+            int neighbor = adj[curvertex][i].first;
+            int neighborcost = cost + adj[curvertex][i].second;
+            
+            //최소경로 발견시 업데이트
+            if(distance[neighbor]>neighborcost){
+                distance[neighbor]=neighborcost;
+                //거리의 부호를 바꾸어 거리가 작은 정점부터 꺼내지도록하기 위해
+                pq.push({-neighborcost,neighbor});
+            }
+        }
+    }
+    return distance;
+}
+int main()
+{
+    cin.tie(0);
+    cout.tie(0);
+    //입력
+    cin>>v>>e;
+    cin>>k;
+    v++;
+    //그래프 생성
+    int from,to,val;
+    for(int i=0;i<e;i++){
+        cin>>from>>to>>val;
+        adj[from].push_back(make_pair(to,val));
+    }
+    
+    vector<int> result = dijkstra(k,v);
+    
+    for(int i=1;i<v;i++){
+        if(result[i]==inf){
+            cout<<"INF"<<"\n";
+        }else{
+            cout<<result[i]<<"\n";
+        }
+    }
+    return 0;
+}
