@@ -1,0 +1,103 @@
+#include <iostream>
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+int v,e,v1,v2;
+int inf = 100000000;
+vector<pair<int,int>> adj[801];
+int dist[801];//비용
+
+void init(){
+    //거리초기화
+    for(int i=1;i<=v;i++){
+        dist[i] = inf;
+    }
+}
+
+int dijkstra(int start,int end){
+    
+    dist[start] = 0;//자기자신
+    priority_queue<pair<int,int>> pq;//우선순위큐, cost,vertex
+    pq.push({0,start});//비용, 정점
+
+    while(!pq.empty()){
+        int cost = -pq.top().first;//비용이 작은것을 꺼냄
+        int current = pq.top().second;//정점
+        pq.pop();
+
+        //최소거리
+        if(dist[current]<cost){
+            continue;//실제로는 더큼, 부호가 반대이므로
+        }
+
+        //이웃다 확인
+        for(int i=0;i<adj[current].size();i++){
+            int next = adj[current][i].first;
+            int nextcost = adj[current][i].second;
+
+            //최소경로 발견시 업데이트
+            if(dist[next]>nextcost+cost){
+                dist[next]=nextcost+cost;
+                //거리의 부호를 바꾸어 거리가 작은 정점부터 꺼내지도록하기 위해
+                pq.push({-dist[next],next});
+            }
+        }
+    }
+    
+    return dist[end];//최단거리
+}
+
+int main()
+{
+    cin.tie(0);
+    cout.tie(0);
+    
+    //그래프 생성
+    cin>>v>>e;
+    for(int i=0;i<e;i++){
+        int from,to,val;
+        cin>>from>>to>>val;
+        //양방향 그래프
+        adj[from].push_back(make_pair(to,val));
+        adj[to].push_back(make_pair(from,val));
+    }
+    
+    cin>>v1>>v2;
+    //1->v1->v2->n
+    int result1=0;
+    int result2=0;
+    init();
+    result1+=dijkstra(1,v1);
+    init();
+    result1+=dijkstra(v1,v2);
+    init();
+    result1+=dijkstra(v2,v);
+    
+    //1->v2->v1->n
+    init();
+    result2+=dijkstra(1,v2);
+    init();
+    result2+=dijkstra(v2,v1);
+    init();
+    result2+=dijkstra(v1,v);
+    
+    //결과출력
+    int result = min(result1,result2);
+    if(result>=inf){
+        cout<<-1<<"\n";
+    }else{
+        cout<<result<<"\n";
+    }
+    return 0;
+}
