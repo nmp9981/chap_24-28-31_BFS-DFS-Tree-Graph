@@ -1,0 +1,124 @@
+#include <iostream>
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+int v,e,t,s,g,h,co;
+int inf = 200000000;
+vector<pair<int,int>> adj[2001];
+int dist[2001];//비용
+
+void dist_init(){
+    //거리초기화
+    for(int i=1;i<=v;i++){
+        dist[i] = inf;
+    }
+}
+
+//지도초기화
+void init(){
+    for(int i=1;i<=v;i++){
+        adj[i].clear();
+    }
+}
+
+int dijkstra(int start,int end){
+    //거리초기화
+    dist_init();
+    
+    dist[start] = 0;//자기자신
+    priority_queue<pair<int,int>> pq;//우선순위큐, cost,vertex
+    pq.push({0,start});//비용, 정점
+
+    while(!pq.empty()){
+        int cost = -pq.top().first;//비용이 작은것을 꺼냄
+        int current = pq.top().second;//정점
+        pq.pop();
+        
+        //종료
+        if(current==end){
+            return dist[current];
+        }
+        //최소거리
+        if(dist[current]<cost){
+            continue;//실제로는 더큼, 부호가 반대이므로
+        }
+
+        //이웃다 확인
+        for(int i=0;i<adj[current].size();i++){
+            int next = adj[current][i].first;
+            int nextcost = adj[current][i].second;
+
+            //최소경로 발견시 업데이트
+            if(dist[next]>nextcost+cost){
+                dist[next]=nextcost+cost;
+                //거리의 부호를 바꾸어 거리가 작은 정점부터 꺼내지도록하기 위해
+                pq.push({-dist[next],next});
+            }
+        }
+    }
+    
+    return inf;//최단거리
+}
+
+//그래프입력
+void input(){
+    //그래프 생성
+    cin>>v>>e>>t;
+    cin>>s>>g>>h;
+    for(int i=0;i<e;i++){
+        int a,b,c;
+        cin>>a>>b>>c;
+        //양방향 그래프
+        adj[a].push_back(make_pair(b,c));
+        adj[b].push_back(make_pair(a,c));
+        if(a==g && b==h || a==h && b==g){
+            co = c;
+        }
+    }
+}
+
+int main()
+{
+    cin.tie(0);
+    cout.tie(0);
+    //테스트 수 입력
+    int test;
+    cin>>test;
+    for(int num=0;num<test;num++){
+        input();//지도초기화
+        //목표입력
+        vector<int> goal;
+        for(int i=0;i<t;i++){
+            int go;
+            cin>>go;
+            //s->g->h->goal
+            if(dijkstra(s,go)==dijkstra(s,g)+co+dijkstra(h,go)){
+                goal.push_back(go);
+            }else if(dijkstra(s,go)==dijkstra(s,h)+co+dijkstra(g,go)){
+                goal.push_back(go);
+            }
+        }
+        //초기화
+        init();
+        
+        //최종목적지
+        sort(goal.begin(),goal.end());
+        for(int i=0;i<goal.size();i++){
+            cout<<goal[i]<<" ";
+        }
+        cout<<"\n";
+    }
+
+    return 0;
+}
