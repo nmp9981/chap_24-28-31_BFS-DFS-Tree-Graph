@@ -1,0 +1,88 @@
+#include <iostream>
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+
+int n,m;
+int inf = 200000000;//cost의 총합보다는 커야함
+vector<pair<int,int>> map[1001];//그래프정보
+int cost[1001];//각 노드별 비용
+int st,goal;
+
+void init_cost(){
+    //비용 초기화
+    for(int i=1;i<=n;i++){
+        cost[i] = inf;
+    }
+}
+
+//다익스트라
+int dijk(int start, int end){
+    cost[start] = 0;
+    priority_queue<pair<int,int>> pq;//우선순위 큐, 비용,정점
+    pq.push({0,start});
+
+    while(!pq.empty()){
+        int fee = -pq.top().first;//최소힙으로,비용이 작은것을 꺼냄
+        int x = pq.top().second;//정점
+        pq.pop();
+
+        //이전값보다 더 큰수 등장시 
+        if(cost[x]<fee){
+            continue;
+        }
+
+        //이웃을 모두확인
+        for(int i=0;i<map[x].size();i++){
+            int next = map[x][i].first;
+            int nextcost = map[x][i].second;
+            //최소경로 발견시 업데이트
+            if(cost[next] > fee + nextcost){
+                cost[next] = fee + nextcost;
+                pq.push({-cost[next],next});
+            }
+        }
+    }
+    return cost[end];
+}
+
+int main()
+{
+    cin.tie(0);
+    cout.tie(0);
+
+    //입력
+    cin>>n;
+    cin>>m;
+
+    //간선 입력
+    for(int i=0;i<m;i++){
+        int a,b,c;
+        cin>>a>>b>>c;//노드,가중치
+        //단방향 간선
+        map[a].push_back({b,c});
+    }
+    //목표지점
+    cin>>st>>goal;
+
+    //begin->goal
+    int result;
+    init_cost();//비용 초기화
+    result = dijk(st,goal);//다익스트라 적용
+
+    //결과
+    cout<<result;
+    
+    return 0;
+}
