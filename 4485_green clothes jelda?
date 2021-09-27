@@ -1,0 +1,95 @@
+#include <iostream>
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+
+int n,d,k,c;
+int map[125][125];//지도
+int visit[125][125];//방문여부
+int dx[] = {-1,1,0,0};
+int dy[] = {0,0,-1,1};
+int inf = 10000000;
+queue<pair<int,int>> q;
+
+//맵,큐 초기화
+void init_map(){
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            visit[i][j] = inf;
+        }
+    }
+    while(!q.empty()){
+        q.pop();
+    }
+}
+
+//맵입력
+void input(){
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            cin>>map[i][j];
+        }
+    }
+}
+
+int bfs(int a,int b){
+    //첫 좌표
+    visit[a][b] = map[0][0];//방문표시
+    q.push({a,b});
+    
+    while(!q.empty()){
+        //현재좌표
+        int x = q.front().first;
+        int y = q.front().second;
+        q.pop();
+        
+        //4방향 탐색
+        for(int i=0;i<4;i++){
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+            //범위내에 있고
+            if(nx>=0 && nx<n && ny>=0 && ny<n){
+                //더 작은 숫자가 오면
+                if(visit[nx][ny] > map[nx][ny] + visit[x][y]){
+                    q.push({nx,ny});
+                    visit[nx][ny] = map[nx][ny] + visit[x][y];
+                }
+            }
+        }
+    }
+    return visit[n-1][n-1];
+}
+int main()
+{
+    cin.tie(0);
+    cout.tie(0);
+
+    //입력
+    int test = 0;
+    while(true){
+        test++;
+        cin>>n;
+        
+        //종료
+        if(n==0){
+            break;
+        }
+        
+        init_map();//맵 초기화
+        input();//입력
+        int result = bfs(0,0);
+        cout<<"Problem "<<test<<": "<<result<<"\n";
+    }
+    return 0;
+}
