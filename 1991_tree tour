@@ -1,0 +1,75 @@
+#include <iostream>
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+int n;
+char p,l,r;
+int parents[26][2];//알파벳, 왼쪽 오른쪽
+
+//전위순회
+void before(char x){
+    if(x=='.'){
+        return;
+    }else{
+        cout<<x;
+        before(parents[x-'A'][0]);
+        before(parents[x-'A'][1]);
+    }
+}
+
+//중위순회
+void middle(char x){
+    if(x=='.'){
+        return;
+    }else{
+        middle(parents[x-'A'][0]);
+        cout<<x;
+        middle(parents[x-'A'][1]);
+    }
+}
+
+//후위순회
+void after(char x){
+    if(x=='.'){
+        return;
+    }else{
+        after(parents[x-'A'][0]);
+        after(parents[x-'A'][1]);
+        cout<<x;
+    }
+}
+
+int main(){
+    cin.tie(0);
+    cout.tie(0);
+
+    //입력
+    cin>>n;
+    for(int i=0;i<n;i++){
+        cin>>p>>l>>r;
+        parents[p-'A'][0] = l;
+        parents[p-'A'][1] = r;
+    }
+    
+    //전위순회(A가 루트)
+    before('A');
+    cout<<"\n";
+    //중위순회
+    middle('A');
+    cout<<"\n";
+    //후위순회
+    after('A');
+    cout<<"\n";
+    return 0;
+}
