@@ -1,0 +1,102 @@
+#include <iostream>
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+int n,d,c;//노드개수, 간선 수, 시작지점
+vector<pair<int,int>> map[10001];//그래프
+int com[10001];//각 컴퓨터의 감염여부
+int inf = 200000000;//초기값
+
+//감염기록 초기화
+void init_com(){
+    for(int i=1;i<=n;i++){
+        com[i] = inf;
+    }
+}
+
+//그래프 초기화
+void init_map(){
+    for(int i=1;i<=n;i++){
+        map[i].clear();
+    }
+}
+
+//감염
+void dijk(int start){
+    com[start] = 0;//시작지점
+    priority_queue<pair<int,int>> pq;//우선순위 큐
+    pq.push({0,c});//거리, 노드 번호
+    
+    //최단거리 구하기
+    while(!pq.empty()){
+        int sec = -pq.top().first;//거리
+        int node = pq.top().second;//노드 번호
+        pq.pop();
+        
+        //더 큰값이 나오면 패스
+        if(com[node]<sec){
+            continue;
+        }
+        
+        //다음지점 탐색
+        for(int i=0;i<map[node].size();i++){
+            int next_sec = map[node][i].second;//다음 노드 시간
+            int next_node = map[node][i].first;//다음지점
+            //더 작은 값이 나오면 갱신
+            if(com[next_node] > next_sec+sec){
+                com[next_node] = next_sec + sec;
+                pq.push({-com[next_node],next_node});
+            }
+        }
+    }
+    
+    //결과
+    int cnt = 0;//감염 대수
+    int shortest = 0;//최단시간
+    for(int i=1;i<=n;i++){
+        if(com[i]<inf){//감염된것만
+            cnt++;
+            shortest = max(com[i],shortest);
+        }
+    }
+    //출력
+    cout<<cnt<<" "<<shortest<<"\n";
+}
+
+//입력
+void input(){
+    cin>>n>>d>>c;
+    for(int i=0;i<d;i++){
+        int a,b,s;
+        cin>>a>>b>>s;
+        map[b].push_back({a,s});//b->a 단방향그래프
+    }
+}
+
+int main()
+{
+    cin.tie(0);
+    cout.tie(0);
+
+    //입력
+    int te;
+    cin>>te;
+    for(int test=0;test<te;test++){
+        input();//입력
+        init_com();//컴퓨터 초기화
+        dijk(c);//감염
+        init_map();//그래프 초기화
+    }
+    return 0;
+}
