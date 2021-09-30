@@ -1,0 +1,62 @@
+#include <iostream>
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+int tree[1000001][2];//트리(값,왼쪽오른쪽)
+
+//후위순회 출력
+void postorder(int x){
+    if(x==0){//없는 노드
+        return;
+    }
+    postorder(tree[x][0]);
+    postorder(tree[x][1]);
+    cout<<x<<"\n";
+}
+
+//이진검색 트리의 특징 이용(루트보다 더 큰수가 오른쪽)
+void preorder(int root,int x){
+    if(x>root){//루트보다 더 크면 오른쪽
+        if(tree[root][1] == 0){//아직 안넣었으면
+            tree[root][1] = x;
+            return;
+        }else{//이미 값이 있으면 더 깊게
+            preorder(tree[root][1],x);
+        }
+    }else{
+        if(tree[root][0] == 0){//아직 안넣었으면
+            tree[root][0] = x;
+            return;
+        }else{//이미 값이 있으면 더 깊게
+            preorder(tree[root][0],x);
+        }
+    }
+}
+
+int main()
+{
+    cin.tie(0);
+    cout.tie(0);
+
+    //입력
+    int root,n;
+    cin>>root;//루트 입력
+    memset(tree,0,sizeof(tree));//tree전체 초기화
+    while(cin>>n){//EOP입력
+        preorder(root,n);
+    }
+    postorder(root);//후위순회 출력
+    
+    return 0;
+}
