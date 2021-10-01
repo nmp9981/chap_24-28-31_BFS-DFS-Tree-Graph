@@ -1,0 +1,58 @@
+#include <iostream>
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+int n;
+int inorder[100001];//중위
+int postorder[100001];//후휘
+int idx[100001];//중위
+
+//전위순회
+void preorder(int instart,int inend,int poststart,int postend){
+    //모순
+    if(instart>inend || poststart>postend){
+        return;
+    }
+    
+    //중위순회 기준으로 재귀
+    int root = postorder[postend];//후위노드의 맨끝이 노드
+    cout<<root<<" ";//전위는 루트부터
+    //왼쪽
+    preorder(instart,idx[root]-1,poststart,poststart+idx[root]-instart-1);
+    //오른쪽
+    preorder(idx[root]+1,inend,poststart+idx[root]-instart,postend-1);
+}
+
+int main(){
+    cin.tie(0);
+    cout.tie(0);
+    
+    //입력
+    cin>>n;
+    //중위순회
+    for(int i=0;i<n;i++){
+        cin>>inorder[i];
+    }
+    //후위순회
+    for(int i=0;i<n;i++){
+        cin>>postorder[i];
+    }
+    
+    for(int i=0;i<n;i++){
+        idx[inorder[i]] = i;//각 중위순회의 위치
+    }
+    
+    preorder(0,n-1,0,n-1);//각 위치를 넣어줌
+    return 0;
+}
