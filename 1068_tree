@@ -1,0 +1,69 @@
+#include <iostream>
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+int n,root,del;
+vector<int> map[50];//트리
+int cnt = 0;
+
+//밑에있는 노드들 모두 지우기
+void del_node(int start){
+    for(int i=0;i<map[start].size();i++){
+        int next = map[start][i];//다음지점
+        
+        //지운노드
+        if(del==next){
+            if(map[start].size()==1){//부모노드가 leaf
+                cnt++;
+            }
+            continue;
+        }
+        //리프노드(다음지점이 없음)
+        if(map[next].size()==0){
+            cnt++;
+        }else{
+            del_node(next);//다음 노드로 재귀
+        }
+    }
+}
+
+int main()
+{
+    cin.tie(0);
+    cout.tie(0);
+    
+    //입력
+    cin>>n;
+    for(int i=0;i<n;i++){
+        int x;
+        cin>>x;
+        if(x != -1){
+            map[x].push_back(i);//i는 노드, x는 부모 노드
+        }else{
+            root = i;//루트 노드
+        }
+    }
+    
+    //제거할 노드
+    cin>>del;
+    
+    //노드없애기
+    if(del==root){
+        cout<<cnt;
+    }else{
+        del_node(root);
+        cout<<cnt;
+    }
+    return 0;
+}
