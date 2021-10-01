@@ -1,0 +1,68 @@
+#include <iostream>
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+int n,m;
+int parent[1000001];//부모노드
+
+//루트 노드 찾기
+int find(int x){
+    if(x==parent[x]){//같으면 루트노드
+        return x;
+    }
+    parent[x] = find(parent[x]);//재귀로 부모노드 접근
+    return parent[x];
+}
+
+//합치기
+void merge(int x, int y){
+    //각 부모노드를 비교
+    x = find(x);
+    y = find(y);
+    if(x==y){//이미 같은 집합
+        return;
+    }else{
+        parent[y] = x;//합함
+    }
+}
+
+int main(){
+    cin.tie(0);
+    cout.tie(0);
+    
+    //입력
+    cin>>n>>m;
+    
+    //초기화
+    for(int i=0;i<=n;i++){
+        parent[i] = i;
+    }
+    
+    //연산 
+    for(int i=0;i<m;i++){
+        int a,b,c;
+        cin>>a>>b>>c;
+        if(a==0){
+            merge(b,c);
+        }else{
+            if(find(b)==find(c)){
+                cout<<"YES"<<"\n";
+            }else{
+                cout<<"NO"<<"\n";
+            }
+        }
+    }
+   
+    return 0;
+}
