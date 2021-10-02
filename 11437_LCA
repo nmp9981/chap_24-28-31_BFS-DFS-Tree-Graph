@@ -1,0 +1,89 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+
+int n,m;
+vector<int> tree[50001];//트리
+int parent[50001];//각 노드의 부모노드
+int depth[50001];//해당노드의 깊이
+int visit[50001];//해당노드 방문 여부
+
+//각 노드의 부모노드, 깊이 저장
+void bfs(int start){
+    visit[start] = 1;//방문표시
+    queue<int> q;
+    q.push(start);//트리의 루트
+    
+    while(!q.empty()){
+        int x = q.front();//부모노드
+        q.pop();
+        
+        //자식노드탐색
+        for(int i=0;i<tree[x].size();i++){
+            int next = tree[x][i];//다음지점
+            //미방문이면
+            if(visit[next]==0){
+                visit[next] = 1;//방문표시
+                parent[next] = x;//부모노드 표시
+                depth[next] = depth[x]+1;//깊이 추가
+                q.push(next);
+            }
+        }
+    }
+}
+
+//최소공통조상
+void LCA(int u,int v){
+    //편의를 위해 v를 더 깊게
+    if(depth[v]<depth[u]){
+        swap(u,v);
+    }
+    
+    //두 노드의 깊이가 같아질 때까지 위로 거슬러 올라감
+    while(depth[u]!=depth[v]){
+        v = parent[v];
+    }
+    //두 노드가 같아질때까지 위로 거슬러 올라감
+    while(u!=v){
+        u = parent[u];
+        v = parent[v];
+    }
+    cout<<u<<"\n";
+}
+
+int main()
+{
+    cin.tie(0);
+    cout.tie(0);
+    
+    //입력
+    cin>>n;//정점의 수
+    for(int i=0;i<n-1;i++){//간선개수 n-1
+        int a,b;
+        cin>>a>>b;
+        tree[a].push_back(b);
+        tree[b].push_back(a);
+    }
+    
+    bfs(1);//트리 순회(루트노드 : 1)
+    
+    //LCA결과
+    cin>>m;
+    for(int i=0;i<m;i++){
+        int a1,a2;
+        cin>>a1>>a2;
+        LCA(a1,a2);
+    }
+    return 0;
+}
