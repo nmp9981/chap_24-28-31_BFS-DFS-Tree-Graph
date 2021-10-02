@@ -1,0 +1,112 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+
+int n,m;
+vector<int> tree[10001];//트리
+int parent[10001];//각 노드의 부모노드
+int depth[10001];//해당노드의 깊이
+int visit[10001];//해당노드 방문 여부
+int chk[10001];//루트노드 체크
+
+//그래프 입력
+void input(){
+    cin>>n;//정점의 수
+    for(int i=0;i<n-1;i++){//간선개수 n-1
+        int a,b;
+        cin>>a>>b;
+        tree[a].push_back(b);//a가 b의 부모
+        chk[b] = 1;//루트여부 체크
+    }
+}
+
+//각 노드의 부모노드, 깊이 저장
+void bfs(int start){
+    visit[start] = 1;//방문표시
+    queue<int> q;
+    q.push(start);//트리의 루트
+    
+    while(!q.empty()){
+        int x = q.front();//부모노드
+        q.pop();
+        
+        //자식노드탐색
+        for(int i=0;i<tree[x].size();i++){
+            int next = tree[x][i];//다음지점
+            //미방문이면
+            if(visit[next]==0){
+                visit[next] = 1;//방문표시
+                parent[next] = x;//부모노드 표시
+                depth[next] = depth[x]+1;//깊이 추가
+                q.push(next);
+            }
+        }
+    }
+}
+
+//최소공통조상
+void LCA(int u,int v){
+    //편의를 위해 v를 더 깊게
+    if(depth[v]<depth[u]){
+        swap(u,v);
+    }
+    
+    //두 노드의 깊이가 같아질 때까지 위로 거슬러 올라감
+    while(depth[u]!=depth[v]){
+        v = parent[v];
+    }
+    //두 노드가 같아질때까지 위로 거슬러 올라감
+    while(u!=v){
+        u = parent[u];
+        v = parent[v];
+    }
+    cout<<u<<"\n";//공통조상
+}
+
+//초기화
+void init(){
+    for(int i=1;i<=n;i++){
+        tree[i].clear();
+        parent[i] = 0;
+        visit[i] = 0;
+        depth[i] = 0;
+        chk[i] = 0;
+    }
+}
+
+int main()
+{
+    cin.tie(0);
+    cout.tie(0);
+    
+    //입력
+    int t,a1,a2;
+    cin>>t;
+    for(int test=0;test<t;test++){
+        input();
+        //루트노드 찾기
+        int root;
+        for(int i=1;i<=n;i++){
+            if(chk[i]==0){//루트
+                root = i;
+            }
+        }
+        bfs(root);//트리 순회(루트노드 : 1)
+        //LCA결과
+        cin>>a1>>a2;
+        LCA(a1,a2);
+        init();//초기화
+    }
+    return 0;
+}
