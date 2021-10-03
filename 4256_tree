@@ -1,0 +1,75 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+int n;
+int preorder[1001];//전위순회
+int inorder[1001];//중위순회
+int idx[1001];//각 노드의 루트노드
+
+//입력
+void input(){
+    //전위순회
+    for(int i=0;i<n;i++){
+        cin>>preorder[i];
+    }
+    //중위순회
+    for(int i=0;i<n;i++){
+        cin>>inorder[i];
+    }
+    //각 중위순회 위치(루트노드를 알기 위함)
+    for(int i=0;i<n;i++){
+        idx[inorder[i]] = i;
+    }
+}
+
+//초기화
+void init(){
+    for(int i=0;i<n;i++){
+        preorder[i] = 0;
+        inorder[i] = 0;
+        idx[i] = 0;
+    }
+}
+
+//후위노드(중위 시작,끝, 전위 시작,끝)
+void postorder(int st_in,int end_in,int st_pre,int end_pre){
+    //더이상 분할 불가능
+    if(st_in>end_in || st_pre>end_pre){
+        return;
+    }
+
+    int root = preorder[st_pre];//전위는 맨앞이 루트노드
+    int size = idx[root]-st_in;//중위 순회기준 왼쪽 덩어리
+    postorder(st_in,idx[root]-1,st_pre+1,st_pre+size);//왼쪽
+    postorder(idx[root]+1,end_in,1+st_pre+size,end_pre);//오른쪽
+    cout<<root<<" ";
+}
+
+int main(){
+    cin.tie(0);
+    cout.tie(0);
+
+    //입력
+    int t;
+    cin>>t;
+    for(int te=0;te<t;te++){
+        cin>>n;
+        input();//전위,중위순회 결과 입력
+        postorder(0,n-1,0,n-1);//후위순회
+        init();//초기화
+        cout<<"\n";
+    }
+    
+    return 0;
+}
