@@ -1,0 +1,53 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+int n,root,k;
+vector<int> tree[11];//출력용
+int map[1024];//원소
+
+//트리 탐색
+void dfs(int start,int depth){
+    //재귀종료
+    if(depth==-1){
+        return;
+    }
+    tree[n-depth-1].push_back(map[start]);//트리에 넣기
+    int move_node = pow(2,depth-1);//기존 루트부터와의 거리
+    dfs(start-move_node,depth-1);//왼쪽
+    dfs(start+move_node,depth-1);//오른쪽
+}
+
+int main(){
+    cin.tie(0);
+    cout.tie(0);
+
+    //입력
+    cin>>n;
+    k = pow(2,n)-1;//노드의 총 개수
+    for(int i=1;i<=k;i++){
+        cin>>map[i];
+    }
+    
+    root = pow(2,n-1);//처음 루트 노드
+    dfs(root,n-1);//재귀
+    
+    //출력
+    for(int i=0;i<n;i++){
+        for(int j=0;j<tree[i].size();j++){
+            cout<<tree[i][j]<<" ";
+        }
+        cout<<"\n";
+    }
+    return 0;
+}
