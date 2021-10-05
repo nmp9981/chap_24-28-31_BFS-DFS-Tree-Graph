@@ -1,0 +1,71 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+int n,m;
+vector<int> tree[32001];//트리
+int depth[32001];//진입 차수
+
+//위상정렬
+void bfs(){
+    vector<int> result;
+    queue<int> q;
+    
+    //진입차수 0인 노드를 큐에 삽입
+    for(int i=1;i<=n;i++){
+        if(depth[i]==0){
+            q.push(i);
+        }
+    }
+    
+    while(!q.empty()){
+        //현재 원소
+        int x = q.front();
+        result.push_back(x);
+        q.pop();
+        
+        //이웃노드 탐색
+        for(int i=0;i<tree[x].size();i++){
+            int next = tree[x][i];
+            depth[next]-=1;//진입차수에서 1빼기
+            if(depth[next]==0){//진입차수가 0이라면
+                q.push(next);
+            }
+        }
+    }
+    
+    //결과 출력
+    for(int i=0;i<result.size();i++){
+        cout<<result[i]<<" ";
+    }
+}
+
+//입력
+void input(){
+    cin>>n>>m;
+    for(int i=0;i<m;i++){
+        int a,b;
+        cin>>a>>b;
+        tree[a].push_back(b);//a가 b보다 앞
+        depth[b]+=1;//진입차수 증가
+    }
+}
+
+int main(){
+    cin.tie(0);
+    cout.tie(0);
+
+    input();//입력
+    bfs();//위상정렬
+    return 0;
+}
