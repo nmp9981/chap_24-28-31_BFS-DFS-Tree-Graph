@@ -1,0 +1,138 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+long long n,k,q;
+vector<long long> tree;//트리(2^50 > 10^15),각 층의 마지막 수
+vector<long long> parent_a;//a의 부모노드
+vector<long long> parent_b;//b의 부모노드
+int depth_a,depth_b;//a,b노드의 깊이
+int dist = 0;//거리
+
+//k진트리
+void k_binary(long long n,long long k){
+    long long x = 1;
+    long long sum = 1;
+    tree.push_back(sum);
+    while(sum<=n){
+        x *= k;
+        sum += x;
+        tree.push_back(sum);
+    }
+}
+
+//깊이 구하기
+int deep(long long x){
+    //루트(1)부터 각 노드
+    int i=0;
+    while(true){
+        if(x>tree[i]){
+            i++;
+        }else{
+            break;
+        }
+    }
+    return i;
+}
+
+//부모노드 기록
+void dfs_a(long long x,int depth){
+    if(depth==0){
+        return;
+    }else if(depth==1){
+        parent_a.push_back(1);
+        dfs_a(1,depth-1);
+    }else{
+        //부모노드 구하기
+        long long node = (x-tree[depth-1]-1)/k+1;
+        node += tree[depth-2];
+        parent_a.push_back(node);//부모노드 기록
+        dfs_a(node,depth-1);
+    }
+}
+
+void dfs_b(long long x,int depth){
+    if(depth==0){
+        return;
+    }else if(depth==1){
+        parent_b.push_back(1);
+        dfs_b(1,depth-1);
+    }else{
+        //부모노드 구하기
+        long long node = (x-tree[depth-1]-1)/k+1;
+        node += tree[depth-2];
+        parent_b.push_back(node);//부모노드 기록
+        dfs_b(node,depth-1);
+    }
+}
+
+//노드간 거리
+void LCA(){
+    //정렬(반대로 입력)
+    sort(parent_a.begin(),parent_a.end());
+    sort(parent_b.begin(),parent_b.end());
+    //깊이가 같게
+    int a_size = parent_a.size();
+    int b_size = parent_b.size();
+    int size = abs(a_size-b_size);
+    dist += size;
+    //공통 노드
+    int l = min(parent_a.size(),parent_b.size())-1;
+    while(parent_b[l]!=parent_a[l]){
+        l--;
+        dist+=2;
+    }
+    cout<<dist<<"\n";//출력
+}
+
+//초기화
+void init(){
+    tree.clear();
+    parent_a.clear();
+    parent_b.clear();
+}
+
+//입력
+void input(){
+    cin>>n>>k>>q;
+    for(int i=0;i<q;i++){//그래프 입력
+        long long a,b;
+        cin>>a>>b;
+        if(k==1){//자식노드가 1개
+            cout<<abs(b-a)<<"\n";
+        }else{
+            //k진 트리제작
+            k_binary(n,k);
+            //각 노드의 깊이
+            depth_a = deep(a);
+            depth_b = deep(b);
+            //부모노드 기록
+            parent_a.push_back(a);
+            parent_b.push_back(b);
+            dfs_a(a,depth_a);
+            dfs_b(b,depth_b);
+            //LCA
+            dist = 0;
+            LCA();
+            init();//초기화
+        }
+    }
+}
+
+int main(){
+    cin.tie(0);
+    cout.tie(0);
+    
+    input();//입력
+    return 0;
+}
