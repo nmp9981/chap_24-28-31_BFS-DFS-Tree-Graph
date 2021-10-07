@@ -1,0 +1,71 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+int n,m;//노드의 수, 간선 수
+vector<int> tree[501];//지도입력
+int visit[501];//방문 여부
+int cnt = 0;//초대동기 수
+
+//입력
+void input(){
+    cin>>n;
+    cin>>m;
+    for(int i=0;i<m;i++){
+        int a,b;
+        cin>>a>>b;
+        tree[a].push_back(b);//양방향 그래프
+        tree[b].push_back(a);
+    }
+}
+
+//bfs
+void bfs(int root){
+    visit[root] = 1;//방문
+    queue<pair<int,int>> q;
+    q.push({1,0});//노드, 깊이
+    
+    while(!q.empty()){
+        //현재 노드
+        int x = q.front().first;
+        int depth = q.front().second;//깊이
+        q.pop();
+        
+        //이웃 탐색
+        for(int i=0;i<tree[x].size();i++){
+            int next = tree[x][i];//다음 지점
+            //미방문이고 깊이가 1이하(친구의 친구)
+            if(visit[next]==0 && depth<2){
+                visit[next] = 1;//방문 체크
+                q.push({next,depth+1});//깊이 1증가
+            }
+        }
+    }
+    //결과
+    for(int i=1;i<=n;i++){
+        if(visit[i]==1){
+            cnt++;
+        }
+    }
+    cout<<cnt-1;//1번 본인 제외
+}
+
+int main(){
+    cin.tie(0);
+    cout.tie(0);
+    
+    input();//입력
+    bfs(1);//루트는 1
+    
+    return 0;
+}
