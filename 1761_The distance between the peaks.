@@ -1,0 +1,103 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+int n,m;
+vector<pair<int,int>> tree[40001];//트리
+int parent[40001];//각 노드의 부모노드
+int depth[40001];//각 노드의 깊이
+int dist[40001];//루트로부터 각 노드까지의 거리
+int visit[40001];//방문여부
+
+//초기화
+void init(){
+    for(int i=1;i<=n;i++){
+        parent[i] = i;
+        depth[i] = 0;
+        dist[i] = 0;
+        visit[i] = 0;
+    }
+}
+
+//입력
+void input(){
+    for(int i=0;i<n-1;i++){
+        int a,b,d;
+        cin>>a>>b>>d;
+        tree[a].push_back({b,d});//트리에 넣기
+        tree[b].push_back({a,d});
+    }
+}
+
+//최소 공통 노드
+int LCA(int u, int v){
+    //v가 더 깊게
+    if(depth[u]>depth[v]){
+        swap(u,v);
+    }
+    //같은 깊이가 될때까지
+    while(depth[u]!=depth[v]){
+        v = parent[v];
+    }
+    //두노드가 같을때까지
+    while(u!=v){
+        u = parent[u];
+        v = parent[v];
+    }
+    return u;
+}
+
+//각 노드의 부모노드, 거리 기록
+void bfs(int root){
+    queue<int> q;
+    q.push(root);
+    visit[root] = 1;
+    
+    while(!q.empty()){
+        int x = q.front();//현재노드
+        q.pop();
+        
+        for(int i=0;i<tree[x].size();i++){
+            int next = tree[x][i].first;//다음지점
+            int next_dist = tree[x][i].second;//거리
+            if(visit[next]==0){//미방문
+                visit[next] = 1;
+                depth[next] = depth[x]+1;//깊이 갱신
+                dist[next] = dist[x]+next_dist;//거리 갱신
+                parent[next] = x;//next 의 부모는 x
+                q.push(next);
+            }
+        }
+    }
+}
+
+int main(){
+    cin.tie(0);
+    cout.tie(0);
+    
+    cin>>n;
+    init();
+    input();
+    
+    //루트부터
+    parent[1] = -1;
+    bfs(1);
+    cin>>m;
+    for(int i=0;i<m;i++){
+        int r1,r2;
+        cin>>r1>>r2;
+        int com = LCA(r1,r2);
+        cout<<dist[r1]+dist[r2]-dist[com]-dist[com]<<"\n";
+    }
+    return 0;
+}
