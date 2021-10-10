@@ -1,0 +1,111 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+int n,m;
+vector<int> tree[100001];//트리
+int parent[100001];//각 노드의 부모노드
+int depth[100001];//각 노드의 깊이
+int visit[100001];//방문여부
+int dp[100001][18];//dp테이블
+
+//sparse table
+void dp_table(int n){
+    for(int i=1;i<=n;i++){
+        dp[i][0] = parent[i];//부모노드 넣기,기저사례
+    }
+    for(int j=1;j<=17;j++){
+        for(int i=1;i<=n;i++){
+            //각 노드에 대해 2^i번째 부모정보 갱신
+            dp[i][j] = dp[dp[i][j-1]][j-1];
+        }
+    }
+}
+
+//입력
+void input(){
+    for(int i=0;i<n-1;i++){
+        int a,b;
+        cin>>a>>b;
+        tree[a].push_back(b);//트리에 넣기
+        tree[b].push_back(a);
+    }
+}
+
+//최소 공통 노드
+int LCA(int u, int v){
+    //v가 더 깊게
+    if(depth[u]>depth[v]){
+        swap(u,v);
+    }
+    //같은 깊이가 될때까지
+    for(int i=17;i>=0;i--){
+        if(depth[v]-depth[u] >= (1<<i)){//2^i만큼 거슬러 올라감
+            v = dp[v][i];
+        }
+    }
+    
+    //두노드가 같을때까지
+    if(u==v){
+        return u;
+    }
+    for(int i=17;i>=0;i--){
+        if(dp[u][i]!=0 && dp[u][i] != dp[v][i]){
+            v = dp[v][i];
+            u = dp[u][i];
+        }
+    }
+    return dp[u][0];//같기 직전에서 1칸올라간게 최고조상
+}
+
+//각 노드의 부모노드 기록
+void bfs(int root){
+    queue<int> q;
+    q.push(root);
+    
+    while(!q.empty()){
+        int x = q.front();//현재노드
+        q.pop();
+        visit[x] = 1;//방문체크
+        
+        for(int i=0;i<tree[x].size();i++){
+            int next = tree[x][i];//다음지점
+            if(visit[next]==0){//미방문
+                visit[next] = 1;//방문체크
+                depth[next] = depth[x]+1;//깊이 갱신
+                parent[next] = x;//next 의 부모는 x(바로 위 부모만)
+                q.push(next);
+            }
+        }
+    }
+}
+
+int main(){
+    cin.tie(0);
+    cout.tie(0);
+    
+    cin>>n;
+    input();
+    
+    //루트부터
+    dp[1][0] = 0;
+    bfs(1);
+    dp_table(n);//sparse table
+    cin>>m;
+    for(int i=0;i<m;i++){
+        int r1,r2;
+        cin>>r1>>r2;
+        cout<<LCA(r1,r2)<<"\n";
+    }
+    return 0;
+}
