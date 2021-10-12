@@ -1,0 +1,67 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+int n,k;
+bool visit[500001][2];//방문여부
+queue<pair<int,int>> q;
+//짝수차이 시간은 제자리로 돌아오는 경우를 고려
+
+//탐색
+void bfs(int n,int k){
+    q.push({n,0});
+    visit[n][0] = true;//짝수시간을 0행으로
+    
+    while(!q.empty()){
+        //현재 지점
+        int x = q.front().first;//현재 지점
+        int t = q.front().second;//현재 시간
+        int y = k+(t*(t+1)/2);//동생 지점
+        q.pop();
+        
+        if(y>500000){
+            cout<<-1;
+            return;
+        }
+        
+        if(x==y){//종료
+            cout<<t;
+            return;
+        }
+        
+        //다음지점(범위내에 있고 미방문)
+        //홀수 차이일 경우 방문에 제한을 둠
+        if(2*x<=500000 && visit[2*x][(t+1)%2]==false){
+            visit[2*x][(t+1)%2] = true;//방문체크
+            q.push({2*x,t+1});
+        }
+        if(x+1<=500000 && visit[x+1][(t+1)%2]==false){
+            visit[x+1][(t+1)%2] = true;//방문체크
+            q.push({x+1,t+1});
+        }
+        if(x-1>=0 && visit[x-1][(t+1)%2]==false){
+            visit[x-1][(t+1)%2] = true;//방문체크
+            q.push({x-1,t+1});
+        }
+    }
+ 
+}
+
+int main(){
+    cin.tie(0);
+    cout.tie(0);
+    
+    cin>>n>>k;//입력
+    bfs(n,k);
+    return 0;
+}
