@@ -1,0 +1,82 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+int n;
+double d;
+double map_x[101];//x,y좌표
+double map_y[101];
+vector<pair<double,pair<int,int>>> tree;//트리
+int parent[101];//각노드의 부모노드
+
+//입력
+void input(){
+    cin>>n;
+    //초기화
+    for(int i=0;i<=n;i++){
+        parent[i] = i;
+    }
+    //좌표입력
+    for(int i=0;i<n;i++){
+        cin>>map_x[i]>>map_y[i];
+    }
+    for(int i=0;i<n-1;i++){
+        for(int j=i+1;j<n;j++){
+            double x_dist = pow(map_x[j]-map_x[i],2);
+            double y_dist = pow(map_y[j]-map_y[i],2);
+            d = sqrt(x_dist+y_dist);
+            tree.push_back({d,{i,j}});//가중치, 노드
+        }
+    }
+    //가중치를 기준으로 오름차순 정렬
+    sort(tree.begin(),tree.end());
+}
+
+//루트노드 찾기
+int find(int x){
+    if(parent[x]==x){//루트 노드이면
+        return x;
+    }
+    parent[x] = find(parent[x]);
+    return parent[x];
+}
+
+//크루스칼
+void kruskal(){
+    double sum = 0;//가중치 합
+    for(int i=0;i<tree.size();i++){
+        double weight = tree[i].first;//가중치
+        int x = tree[i].second.first;//x->y,노드
+        int y = tree[i].second.second;
+        
+        //루트노드가 서로 다르면 합체
+        int a = find(x);
+        int b = find(y);
+        if(a!=b){
+            parent[a] = b;//a의 부모는 b
+            sum+=weight;//가중치 증가
+        }
+    }
+    //출력
+    printf("%.2f",sum);
+}
+
+int main(){
+    cin.tie(0);
+    cout.tie(0);
+
+    input();//입력
+    kruskal();//크루스칼
+    
+    return 0;
+}
