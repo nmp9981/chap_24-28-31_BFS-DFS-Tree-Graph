@@ -1,0 +1,76 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+int n,m;
+int parent[100001];
+vector<pair<int,pair<int,int>>> map;//비용,간선
+
+//입력
+void input(){
+    cin>>n>>m;
+    for(int i=1;i<=n;i++){
+        parent[i] = i;//초기화
+    }
+    for(int i=0;i<m;i++){
+        int a,b,d;
+        cin>>a>>b>>d;
+        map.push_back({d,{a,b}});//비용, 간선
+    }
+    sort(map.begin(),map.end());//비용순 정렬
+}
+
+//루트노드 찾기
+int find(int x){
+    if(parent[x]==x){//루트노드이면
+        return x;
+    }
+    parent[x] = find(parent[x]);//부모노드로 거슬러 올라감
+    return parent[x];
+}
+
+//최소 스패닝 트리
+void kruskal(){
+    int sum = 0;//비용의 합
+    int node = 1;//연결 노드의 개수
+    for(int i=0;i<map.size();i++){
+        //현재노드
+        int cost = map[i].first;
+        int x = map[i].second.first;
+        int y = map[i].second.second;
+        
+        //루트노드가 서로 다르다면 합체(사이클 형성 방지)
+        int a = find(x);
+        int b = find(y);
+        if(a!=b){
+            parent[a] = b;//노드 연결
+            sum += cost;//비용 더하기
+            node++;//연결된 노드의 개수 추가
+        }
+        
+        //종료
+        if(node == n-1){//n-1개, 1개 조합
+            cout<<sum;
+            return;
+        }
+    }
+}
+
+int main(){
+    cin.tie(0);
+    cout.tie(0);
+
+    input();//입력
+    kruskal();//크루스칼 알고리즘
+    return 0;
+}
