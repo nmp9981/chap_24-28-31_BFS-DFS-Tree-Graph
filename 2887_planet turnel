@@ -1,0 +1,98 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+int n;
+vector<pair<int,int>> map_x;//x좌표
+vector<pair<int,int>> map_y;//y좌표
+vector<pair<int,int>> map_z;//z좌표
+vector<pair<int,pair<int,int>>> diff;//좌표차이
+int parent[100001];//각 노드의 부모노드
+
+//입력
+void input(){
+    cin>>n;
+    //부모노드 초기화
+    for(int i=0;i<n;i++){
+        parent[i] = i;
+    }
+    
+    //입력
+    for(int i=0;i<n;i++){
+        int a,b,c;
+        cin>>a>>b>>c;
+        map_x.push_back({a,i});//거리, 노드번호
+        map_y.push_back({b,i});//거리, 노드번호
+        map_z.push_back({c,i});//거리, 노드번호
+    }
+}
+
+//정렬
+void sorts(){
+    sort(map_x.begin(),map_x.end());
+    sort(map_y.begin(),map_y.end());
+    sort(map_z.begin(),map_z.end());
+}
+
+//루트노드 찾기
+int find(int x){
+    if(parent[x]==x){//부모가 루트노드이면
+        return x;
+    }
+    parent[x] = find(parent[x]);//거슬러 올라감
+    return parent[x];
+}
+
+//최소 스패닝 트리
+void bfs(){
+    //좌표차이 넣기
+    for(int i=0;i<n-1;i++){
+        diff.push_back({map_x[i+1].first-map_x[i].first,{map_x[i].second,map_x[i+1].second}});
+        diff.push_back({map_y[i+1].first-map_y[i].first,{map_y[i].second,map_y[i+1].second}});
+        diff.push_back({map_z[i+1].first-map_z[i].first,{map_z[i].second,map_z[i+1].second}});
+    }
+    sort(diff.begin(),diff.end());//차이가 작은순으로
+    
+    int sum = 0;
+    int node = 0;//간선개수
+    for(int i=0;i<diff.size();i++){
+        int cost = diff[i].first;//비용
+        int x = diff[i].second.first;//노드
+        int y = diff[i].second.second;
+        
+        //루트노드가 서로 다르면 합체
+        int a = find(x);
+        int b = find(y);
+        if(a!=b){
+            if(a>b){
+                parent[a] = b;
+            }else{
+                parent[b] = a;
+            }
+            sum+=cost;
+        }
+    }
+    //결과
+    cout<<sum;
+    return;
+}
+
+int main(){
+    cin.tie(0);
+    cout.tie(0);
+    
+    input();
+    sorts();
+    bfs();
+    return 0;
+}
