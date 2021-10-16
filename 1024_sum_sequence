@@ -1,0 +1,46 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+int n,l,start,up,down;
+int list_l = -1;
+vector<int> result;
+
+int main(){
+    cin.tie(0);
+    cout.tie(0);
+    
+    cin>>n>>l;
+    //길이 l부터 100까지
+    for(int i=l;i<=100;i++){
+        //시작지점부터 길이 l인 수열의 합에서 도출
+        up = 2*n-i*(i-1);//분자
+        down = 2*i;//분모
+        if(up%down==0 && up/down>=0){//음수 방지
+            start = up/down;//시작지점
+            list_l = i;
+            break;
+        }    
+    }
+    
+    //결과
+    if(list_l == -1){
+        cout<<list_l;
+    }else{
+        for(int i=0;i<list_l;i++){
+            cout<<start+i<<" ";
+        }
+    }
+    
+    return 0;
+}
