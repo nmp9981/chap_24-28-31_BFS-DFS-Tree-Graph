@@ -1,0 +1,89 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+int n,m;
+vector<pair<int,pair<int,int>>> tree;//트리
+int parent[200001];//각 노드의 부모노드
+int total = 0;//최대 비용
+
+void input(){
+    //초기화
+    for(int i=0;i<=n;i++){
+        parent[i] = i;
+    }
+    //트리제작
+    for(int i=0;i<m;i++){
+        int a,b,d;
+        cin>>a>>b>>d;
+        total+=d;//최대 비용 구하기
+        tree.push_back({d,{a,b}});//비용, 노드
+    }
+    sort(tree.begin(),tree.end());//비용순으로 정렬
+}
+
+//초기화
+void init(){
+    tree.clear();
+    total = 0;
+}
+
+//루트노드 찾기
+int find(int x){
+    if(parent[x]==x){
+        return x;
+    }
+    parent[x] = find(parent[x]);
+    return parent[x];
+}
+
+//크루스칼 알고리즘
+void kruskal(){
+    int sum = 0;
+    int node = 0;//노드개수
+    for(int i=0;i<tree.size();i++){
+        int cost = tree[i].first;//비용
+        int x = tree[i].second.first;//노드
+        int y = tree[i].second.second;
+        
+        int a = find(x);
+        int b = find(y);
+        if(a!=b){//루트노드가 서로 다르다면 연결
+            parent[b] = a;
+            sum += cost;
+            node +=1;
+        }
+        
+        if(node==n-1){//간선의 개수가 n-1개가 되어 종료
+            cout<<total-sum<<"\n";
+            return;
+        }
+    }
+}
+
+int main(){
+    cin.tie(0);
+    cout.tie(0);
+    
+    while(true){
+        cin>>n>>m;
+        if(n==0 && m==0){//종료
+            return 0;
+        }else{
+            input();
+            kruskal();
+            init();//초기화
+        }
+    }
+    return 0;
+}
