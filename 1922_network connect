@@ -1,0 +1,77 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+int n,m;
+int parent[1001];
+vector<pair<int,pair<int,int>>> q;
+int total = 0;
+
+//루트노드 구하기
+int find(int x){
+    if(parent[x]==x){//부모노드이면
+        return x;
+    }
+    parent[x] = find(parent[x]);
+    return parent[x];
+}
+
+void input(){
+    cin>>n;
+    cin>>m;
+    //각 노드의 부모노드 초기화
+    for(int i=1;i<=n;i++){
+        parent[i] = i;
+    }
+    //입력
+    for(int i=0;i<m;i++){
+        int a,b,d;
+        cin>>a>>b>>d;
+        q.push_back({d,{a,b}});//비용, 노드
+    }
+    sort(q.begin(),q.end());//정렬
+}
+
+//크루스칼 알고리즘
+void kruskal(){
+    int node = 0;
+    for(int i=0;i<q.size();i++){
+        int cost = q[i].first;
+        int x = q[i].second.first;
+        int y = q[i].second.second;
+        
+        //루트노드가 다르면 합체후 비용 갱신
+        int a = find(x);
+        int b = find(y);
+        if(a!=b){
+            parent[a] = b;
+            total+=cost;
+            node++;
+        }
+        
+        //n-2,1개 => 비용이 최소
+        if(node==n-1){
+            cout<<total;
+            return;
+        }
+    }
+}
+
+int main(){
+    cin.tie(0);
+    cout.tie(0);
+
+    input();
+    kruskal();
+    return 0;
+}
