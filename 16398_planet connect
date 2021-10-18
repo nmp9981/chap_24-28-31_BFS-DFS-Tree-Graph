@@ -1,0 +1,86 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+using namespace chrono;
+int n;
+vector<pair<long long,pair<int,int>>> star;//별간 거리, 간선
+long long matrix[1001][1001];//행성
+int parent[1001];
+
+//입력
+void input(){
+    cin>>n;
+    //부모노드 초기화
+    for(int i=1;i<=n;i++){
+        parent[i] = i;
+    }
+    //입력
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=n;j++){
+            cin>>matrix[i][j];
+        }
+    }
+    //노드와 거리 넣기
+    for(int i=1;i<n;i++){
+        for(int j=i+1;j<=n;j++){
+            long long fee = matrix[i][j];//비용
+            star.push_back({fee,{i,j}});//비용, 간선
+        }
+    }
+    //정렬
+    sort(star.begin(),star.end());
+}
+
+//각 노드의 루트노드
+int find(int x){
+    if(parent[x]==x){//루트노드이면 
+        return x;
+    }
+    parent[x] = find(parent[x]);
+    return parent[x];
+}
+
+//크루스칼
+void bfs(){
+    long long sum = 0;
+    int node = 0;//간선의 개수
+    for(int i=0;i<star.size();i++){
+        long long cost = star[i].first;//비용
+        int x = star[i].second.first;
+        int y = star[i].second.second;
+        
+        int a = find(x);
+        int b = find(y);
+        if(a!=b){
+            parent[b] = a;
+            sum+=cost;
+            node++;
+        }
+        
+        //간선 n-1개를 채우고 종료
+        if(node == n-1){
+            break;
+        }
+    }
+    //출력
+    cout<<sum;
+}
+
+int main(){
+    cin.tie(0);
+    cout.tie(0);
+
+    input();
+    bfs();
+    return 0;
+}
