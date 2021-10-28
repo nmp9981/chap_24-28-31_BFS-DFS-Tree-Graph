@@ -1,0 +1,74 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+int n,m;
+int maze[101][101];//미로
+int visit[101][101];//벽부수기 횟수
+int dx[] = {-1,1,0,0};
+int dy[] = {0,0,-1,1};
+const int inf = 10000000;//초기화 값
+
+//입력
+void input(){
+    cin>>n>>m;
+    for(int i=0;i<m;i++){
+        for(int j=0;j<n;j++){
+            scanf("%1d",&maze[i][j]);
+            visit[i][j] = inf;//초기화
+        }
+    }
+}
+
+//벽부수기
+void bfs(){
+    queue<pair<int,int>> q;
+    q.push({0,0});//초기지점
+    visit[0][0] = 0;
+    
+    while(!q.empty()){
+        int x = q.front().first;
+        int y = q.front().second;
+        q.pop();
+        
+        //다음지점 탐색
+        for(int i=0;i<4;i++){
+            int nx = x + dx[i];//행
+            int ny = y + dy[i];//열
+            //범위내에 있고
+            if(nx<m && nx>=0 && ny<n && ny>=0){
+                //벽이 있다면
+                if(maze[nx][ny]==1){
+                    if(visit[nx][ny] > visit[x][y] + 1){
+                        visit[nx][ny] = visit[x][y] + 1;//횟수증가
+                        q.push({nx,ny});
+                    }
+                }else{//벽이 없다면
+                    if(visit[nx][ny] > visit[x][y]){
+                        visit[nx][ny] = visit[x][y];//횟수 그대로
+                        q.push({nx,ny});
+                    }
+                }
+            }
+        }
+    }
+    cout<<visit[m-1][n-1];
+}
+
+int main(){
+    cin.tie(0);
+    cout.tie(0);
+    
+    input();//입력
+    bfs();//벽부수기
+    return 0;
+}
