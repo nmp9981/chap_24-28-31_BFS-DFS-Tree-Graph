@@ -1,0 +1,80 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+int n,m;
+vector<pair<int,pair<int,int>>> tree;//중량제한,간선
+int parent[10001];//각 노드의 루트노드
+int s,e;//구하는 두 지점
+
+//입력
+void input(){
+    cin>>n>>m;
+    for(int i=1;i<=m;i++){
+        int a,b,c;
+        cin>>a>>b>>c;
+        tree.push_back({c,{a,b}});//양방향 그래프
+        tree.push_back({c,{b,a}});//양방향 그래프
+    }
+    //부모노드 초기화
+    for(int i=1;i<=n;i++){
+        parent[i] = i;
+    }
+    //비용순으로 정렬
+    sort(tree.begin(),tree.end());
+    
+    //구하는 간선 입력
+    cin>>s>>e;
+}
+
+//각 노드의 루트노드 구하기
+int find(int x){
+    if(parent[x]==x){//루트노드라면
+        return x;
+    }
+    parent[x] = find(parent[x]);
+    return parent[x];
+}
+
+//합체
+void merge(int x,int y){
+    int fx = find(x);
+    int fy = find(y);
+    if(fx!=fy){//루트노드가 다르면 연결
+        parent[fy] = fx;
+    }
+}
+
+//중량제한이 큰 간선부터 조사
+void kruskal(){
+    for(int i=tree.size()-1;i>=0;i--){
+        int limt = tree[i].first;
+        int x = tree[i].second.first;
+        int y = tree[i].second.second;
+        
+        merge(x,y);
+        //두 노드가 연결이 될때까지
+        if(find(s)==find(e)){
+            cout<<limt;
+            break;
+        }
+    }
+}
+
+int main(){
+    cin.tie(0);
+    cout.tie(0);
+
+    input();//입력
+    kruskal();//크루스칼 알고리즘
+    return 0;
+}
