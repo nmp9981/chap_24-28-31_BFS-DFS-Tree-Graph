@@ -1,0 +1,113 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <chrono>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+
+using namespace std;//이름공간 선언
+int n,m;
+const int maxi = 50;
+const int inf = 1000000;
+int map[maxi][maxi];//맵 크기
+int visit[maxi][maxi];//각 지점별 방문시간
+int dx[] = {-1,1,0,0};//축이동
+int dy[] = {0,0,-1,1};
+vector<pair<int,int>> virus;//바이러스
+vector<pair<int,int>> select_virus;//선택한 바이러스
+int ans = inf;//정답
+
+//입력
+void input(){
+    cin>>n>>m;
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            cin>>map[i][j];
+            if(map[i][j]==2){//바이러스 놓기
+                virus.push_back({i,j});
+            }
+        }
+    }
+}
+
+//bfs
+int bfs(){
+    memset(visit,-1,sizeof(visit));//방문배열 초기화
+    //활성화 바이러스를 모두 큐에 넣기
+    queue<pair<int,int>> q;
+    for(int i=0;i<select_virus.size();i++){
+        int vx = select_virus[i].first;
+        int vy = select_virus[i].second;
+        visit[vx][vy] = 0;//시작지점은 0초
+        q.push({vx,vy});
+    }
+
+    int times = 0;//시간 초기화
+    while(!q.empty()){
+        int x = q.front().first;
+        int y = q.front().second;
+        q.pop();
+
+        //4방 탐색
+        for(int i=0;i<4;i++){
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+            //범위내에 들고
+            if(nx>=0 && nx<n && ny>=0 && ny<n){
+                //미방문(벽이 아닌)
+                if(visit[nx][ny]==-1 && map[nx][ny]!=1){
+                    visit[nx][ny] = visit[x][y] + 1;//시간 증가
+                    q.push({nx,ny});
+                    times = visit[nx][ny];
+                }
+            }
+        }
+    }
+
+    //바이러스를 퍼뜨릴 수 없는가?
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            //벽이 아닌곳은 방문이 되었어야함
+            if(visit[i][j]==-1 && map[i][j]!=1){
+                return inf;
+            }
+        }
+    }
+    return times;
+}
+
+//조합구하기
+void combination(int idx,int cnt){
+    if(cnt==m){//조합이 만들어지면
+        ans = min(ans,bfs());
+        return;
+    }
+
+    //조합구하기
+    for(int i=idx;i<virus.size();i++){
+        int nx = virus[i].first;
+        int ny = virus[i].second;
+        select_virus.push_back({nx,ny});//활성화 바이러스 넣기
+        combination(i+1,cnt+1);//재귀
+        select_virus.pop_back();//원래대로
+    }
+}
+int main(){
+    cin.tie(0);
+    cout.tie(0);
+
+    input();//입력
+    combination(0,0);//조합구하기
+    //결과
+    if(ans==inf){
+        cout<<-1;
+    }else{
+        cout<<ans;
+    }
+    return 0;
+}
