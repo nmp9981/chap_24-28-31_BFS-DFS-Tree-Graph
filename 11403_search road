@@ -1,0 +1,73 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+#include <set>
+
+using namespace std;//이름공간 선언
+
+int n;
+const int maxi = 101;
+int G[maxi][maxi];//인접행렬
+int ans[maxi][maxi];//정답행렬
+int visit[maxi];//방문노드
+
+//입력
+void input(){
+	cin>>n;
+	//인접행렬 입력
+	for(int i=1;i<=n;i++){
+	    for(int j=1;j<=n;j++){
+	        cin>>G[i][j];
+	    }
+	}
+}
+
+//깊이 우선탐색
+void dfs(int x){
+    for(int k=1;k<=n;k++){
+        //경로가 존재하고 미방문
+        if(G[x][k]==1 && visit[k]==0){
+            visit[k] = 1;//방문체크
+            dfs(k);//다음 경로
+        }
+    }
+}
+
+//출력
+void output(){
+	//정답행렬 출력
+	for(int i=1;i<=n;i++){
+	    for(int j=1;j<=n;j++){
+	        cout<<ans[i][j]<<" ";
+	    }
+	    cout<<"\n";
+	}
+}
+
+int main(){
+    cin.tie(0);
+    cout.tie(0);
+    
+    input();//입력
+    //각 노드별로 깊이우선 탐색
+    for(int i=1;i<=n;i++){
+        memset(visit,0,sizeof(visit));//방문노드 초기화
+        dfs(i);//시작노드
+        
+        //i에서 방문 가능한 지점들을 정답노드에 기록
+        for(int j=1;j<=n;j++){
+            if(visit[j]==1){//방문 가능 지점이면
+                ans[i][j] = 1;
+            }
+        }
+    }
+    output();//출력
+    return 0;
+}
