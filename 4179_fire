@@ -1,0 +1,114 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <cctype>
+#include <algorithm>
+#include <vector>
+#include <stack>
+#include <queue>
+#include <deque>
+#include <utility>
+#include <set>
+
+using namespace std;//이름공간 선언
+
+int n,m;
+int ans = 0;
+const int maxi = 1001;
+string maze[maxi];//미로입력
+int jx,jy;//지훈의 위치
+queue<pair<int,int>> fire;//불의 이동지점
+queue<pair<int,int>> jihun;//지훈 이동지점
+int visit[maxi][maxi];//지훈 방문지점
+int dx[4] = {-1,1,0,0};//축이동
+int dy[4] = {0,0,-1,1};
+
+//입력
+void input(){
+    cin>>n>>m;
+    for(int i=0;i<n;i++){
+        cin>>maze[i];
+    }
+    memset(visit,0,sizeof(visit));//방문기록 초기화
+}
+
+//탈출가능한가?
+bool escape(){
+    //불인 지점 큐에 넣기
+    for(int i=0;i<n;i++){
+        for(int j=0;j<m;j++){
+            if(maze[i][j]=='F'){
+                fire.push({i,j});
+            }
+            if(maze[i][j]=='J'){//지훈의 초기위치
+                jihun.push({i,j});//지훈의 초기지점 큐에 넣기
+                visit[i][j] = 1;//방문체크
+            }
+        }
+    }
+    //탈출시작
+    while(!jihun.empty()){
+        //불번짐
+        int fire_size = fire.size();
+        for(int k=0;k<fire_size;k++){
+            int fx = fire.front().first;
+            int fy = fire.front().second;
+            fire.pop();
+            
+            //다음지점
+            for(int i=0;i<4;i++){
+                int nx = fx + dx[i];
+                int ny = fy + dy[i];
+                //범위내에 들고 미방문
+                if(nx>=0 && nx<n && ny>=0 && ny<m){
+                    if(maze[nx][ny]=='.' || maze[nx][ny]=='J'){
+                        maze[nx][ny] = 'F';//불길 확산
+                        fire.push({nx,ny});//다음지점
+                    }
+                }
+            }
+        }
+        
+        //지훈 이동
+        int ji_s = jihun.size();
+        for(int ji=0;ji<ji_s;ji++){
+            int jx = jihun.front().first;
+            int jy = jihun.front().second;
+            jihun.pop();
+            
+            //탈출성공
+            if(jx==0 || jx==n-1 || jy==0 || jy==m-1){
+                ans+=1;
+                return true;
+            }
+            //지훈 다음지점
+            for(int i=0;i<4;i++){
+                int nx = jx + dx[i];
+                int ny = jy + dy[i];
+                //범위내에 들고 미방문
+                if(nx>=0 && nx<n && ny>=0 && ny<m && visit[nx][ny]==0){
+                    if(maze[nx][ny]=='.'){//빈공간이면
+                        visit[nx][ny] = 1;//방문체크
+                        jihun.push({nx,ny});
+                    }
+                }
+            }
+        }
+        ans++;
+    }
+    return false;//탈출실패
+}
+
+int main(){
+    //빠른 입출력
+    cin.tie(0);
+    cout.tie(0);
+
+    input();//입력
+    if(escape()==true){
+        cout<<ans;
+    }else{
+        cout<<"IMPOSSIBLE";
+    }
+    return 0;
+}
