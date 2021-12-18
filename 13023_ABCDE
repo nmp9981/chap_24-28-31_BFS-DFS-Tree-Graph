@@ -1,0 +1,58 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <cstring>
+#include <cmath>
+using namespace std;
+
+int n,m;
+int ans = 0;
+const int maxi = 2001;
+int visit[maxi];//방문여부
+vector<int> v[maxi];//친구관계
+
+//입력
+void input(){
+    cin>>n>>m;
+    for(int i=0;i<m;i++){
+        int a,b;
+        cin>>a>>b;
+        v[a].push_back(b);
+        v[b].push_back(a);
+    }
+}
+
+//친구관계
+void dfs(int x,int depth){
+    if(depth==4){//깊이가 4이면
+        ans = 1;
+        return;
+    }
+    
+    visit[x] = 1;//방문체크
+    //다음지점
+    for(int i=0;i<v[x].size();i++){
+        int next = v[x][i];
+        if(visit[next]==0){//미방문이면
+            dfs(next,depth+1);
+        }
+    }
+    visit[x] = 0;//체크해제
+}
+
+int main(){
+    input();//입력
+    for(int i=0;i<n;i++){
+        memset(visit,0,sizeof(visit));//초기화
+        if(visit[i]==0){//미방문이면
+            dfs(i,0);
+            if(ans==1){//존재하면
+                cout<<1;
+                return 0;
+            }
+        }
+    }
+    cout<<0;//존재하지 않음
+    return 0;
+}
