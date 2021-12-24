@@ -1,0 +1,71 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <cstring>
+#include <cmath>
+#include <queue>
+using namespace std;
+
+const int inf = 80000000;
+const int maxi = 101;
+int n,m;
+int city[maxi][maxi];//노선 정보
+
+//입력
+void input(){
+    cin>>n>>m;
+    //초기화
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=n;j++){
+            if(i==j){
+                city[i][j] = 0;//자기자신은 비용이 0
+            }else{
+                city[i][j] = inf;
+            }
+        }
+    }
+    //간선정보 입력
+    for(int i=0;i<m;i++){
+        int a,b,c;//a->b 비용 c
+        cin>>a>>b>>c;
+        if(city[a][b]==0){
+            city[a][b] = c;
+        }else{
+            city[a][b] = min(c,city[a][b]);
+        }
+    }
+}
+
+//플로이드 알고리즘
+void floyd(){
+    for(int k=1;k<=n;k++){//경유점
+        for(int i=1;i<=n;i++){
+            for(int j=1;j<=n;j++){
+                //그대로 가는가? 경유점을 지나가는가?
+                city[i][j] = min(city[i][j],city[i][k]+city[k][j]);
+            }
+        }
+    }
+}
+
+//출력
+void output(){
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=n;j++){
+            if(city[i][j]==inf){//없는 경우
+                cout<<0<<" ";
+            }else{
+                cout<<city[i][j]<<" ";
+            }
+        }
+        cout<<"\n";
+    }
+}
+
+int main(){
+    input();//입력
+    floyd();//플로이드 알고리즘
+    output();//출력
+    return 0;
+}
