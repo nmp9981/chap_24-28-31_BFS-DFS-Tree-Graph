@@ -1,0 +1,82 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <cstring>
+using namespace std;
+
+int n,m;
+const int maxi = 101;
+const int inf = 10000000;
+int dp[maxi][maxi];//비교결과
+int not_compare[maxi];//비교결과를 알 수 없는 물건의 개수
+
+//입력
+void input(){
+    cin>>n>>m;
+    //초기화
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=n;j++){
+            if(i==j){//자기자신으로 올 경우 0으로 초기화
+                dp[i][j] = 0;
+            }else{
+                dp[i][j] = inf;
+            }
+        }
+    }
+    //물건쌍 입력
+    for(int i=0;i<m;i++){
+        int a,b;
+        cin>>a>>b;
+        dp[a][b] = 1;//a보다 b가몇번째로 더 가벼운지를 알기위해 1로 설정
+    }
+}
+
+//플로이드 알고리즘
+void floyd(){
+    for(int k=1;k<=n;k++){//경유점
+        for(int i=1;i<=n;i++){
+            for(int j=1;j<=n;j++){
+                //그냥 가는것이 나은가? 점k를 경유해서 가는것이 더 빠른가?
+                dp[i][j] = min(dp[i][j],dp[i][k]+dp[k][j]);
+            }
+        }
+    }
+}
+
+//각 물건 탐색
+void search(){
+    //비교 가능한 물건의 개수를 세줌
+    //행탐색
+    for(int i=1;i<=n;i++){
+        int cnt = 0;
+        for(int j=1;j<=n;j++){
+            if(dp[i][j]!=inf && dp[i][j]!=0){
+                cnt++;//i,j가 비교 가능
+            }
+        }
+        not_compare[i] = cnt;
+    }
+    //열탐색
+    for(int j=1;j<=n;j++){
+        int cnt = 0;
+        for(int i=1;i<=n;i++){
+            if(dp[i][j]!=inf && dp[i][j]!=0){
+                cnt++;//j,i가 비교 가능
+            }
+        }
+        not_compare[j] += cnt;
+    }
+    //출력
+    for(int i=1;i<=n;i++){
+        //전체에서 비교 불가능한 물건을 뺀다.
+        cout<<n-1-not_compare[i]<<"\n";
+    }
+}
+
+int main(){
+    input();//입력
+    floyd();//플로이드 알고리즘
+    search();//각 물건 탐색
+    return 0;
+}
