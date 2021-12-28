@@ -1,0 +1,82 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <cstring>
+using namespace std;
+
+int n,m,s;
+const int maxi = 401;
+const int inf = 80000000;
+int dp[maxi][maxi];//i->j까지의 최단거리
+
+//입력
+void input(){
+    cin>>n>>m;
+    //초기화
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=n;j++){
+            if(i==j){//같을 경우 0
+                dp[i][j] = 0;
+            }else{
+                dp[i][j] = inf;
+            }
+        }
+    }
+    //간선 입력
+    cin.tie(0);//빠른 입출력
+    cout.tie(0);
+    for(int i=0;i<m;i++){
+        int a,b;
+        cin>>a>>b;
+        dp[a][b] = 1;
+    }
+}
+
+//플로이드 알고리즘
+void floyd(){
+    for(int k=1;k<=n;k++){//점k를 경유
+        for(int i=1;i<=n;i++){
+            for(int j=1;j<=n;j++){
+                //그냥 가는것이 이득인가?, 점k를 경유해서 가는것이 이득인가?
+                dp[i][j] = min(dp[i][j],dp[i][k]+dp[k][j]);
+            }
+        }
+    }
+    //반대방향
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=n;j++){
+            if(dp[i][j]>0 && dp[i][j]<inf){//정방향이 존재하는 경우만
+                dp[j][i] = dp[i][j]*(-1);//반대방향
+            }
+        }
+    }
+}
+
+//질문하기
+void question(){
+    cin.tie(0);//빠른 입출력
+    cout.tie(0);
+    cin>>s;
+    for(int i=0;i<s;i++){
+        int a,b;
+        cin>>a>>b;
+        //모르는 경우
+        if(dp[a][b]==0 || dp[a][b]==inf){
+            cout<<0<<"\n";
+        }else{//사건의 관계를 알고 있는 경우
+            if(dp[a][b]>0){//앞사건이 먼저
+                cout<<-1<<"\n";
+            }else{//뒷사건이 먼저
+                cout<<1<<"\n";
+            }
+        }
+    }
+}
+
+int main(){
+    input();//입력
+    floyd();//플로이드 알고리즘
+    question();//질문
+    return 0;
+}
