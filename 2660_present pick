@@ -1,0 +1,80 @@
+#include <iostream>
+#include <cmath>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+int n;
+const int maxi = 51;
+const int inf = 80000000;
+int dp[maxi][maxi];//(i,j)의 친구관계
+int candi_score[maxi];//각 후보자의 점수
+int candidate = inf;//회장후보의 점수
+vector<int> ans;//정답배열
+
+//입력
+void input(){
+    cin>>n;
+    //초기화
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=n;j++){
+            if(i==j){
+                dp[i][j] = 0;
+            }else{
+                dp[i][j] = inf;
+            }
+        }
+    }
+    //입력
+    while(true){
+        int a,b;
+        cin>>a>>b;
+        if(a==-1 && b==-1){//입력 종료
+            break;
+        }else{//두 사람은 친구관계
+            dp[a][b] = 1;
+            dp[b][a] = 1;
+        }
+    }
+}
+
+//플로이드 알고리즘
+void floyd(){
+    for(int k=1;k<=n;k++){//점 k를 경유
+        for(int i=1;i<=n;i++){
+            for(int j=1;j<=n;j++){
+                //k를 지나는게 이득인가? 그냥 가는것이 이득인가?
+                dp[i][j] = min(dp[i][j],dp[i][k]+dp[k][j]);
+            }
+        }
+    }
+    //회장후보의 점수
+    for(int i=1;i<=n;i++){//행기준
+        int score = 0;//각 후보의 점수
+        for(int j=1;j<=n;j++){
+            score = max(score,dp[i][j]);
+        }
+        candi_score[i] = score;//각 후보의 점수 등록
+        candidate = min(score,candidate);//회장의 점수 갱신
+    }
+}
+
+//출력
+void output(){
+    for(int i=1;i<=n;i++){
+        if(candi_score[i]==candidate){
+            ans.push_back(i);
+        }
+    }
+    cout<<candidate<<" "<<ans.size()<<"\n";
+    for(int i=0;i<ans.size();i++){
+        cout<<ans[i]<<" ";
+    }
+}
+int main()
+{
+    input();//입력
+    floyd();//플로이드 알고리즘
+    output();//출력
+    return 0;
+}
