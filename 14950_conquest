@@ -1,0 +1,66 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int n,m,t;
+const int maxi = 10001;
+int parent[maxi];//각 노드의 부모노드
+vector<pair<int,pair<int,int>>> city;//도시 그래프
+
+//입력
+void input(){
+    cin>>n>>m>>t;
+    //부모노드 초기화
+    for(int i=1;i<=n;i++){
+        parent[i] = i;
+    }
+    //간선 입력
+    for(int i=0;i<m;i++){
+        int a,b,c;
+        cin>>a>>b>>c;
+        city.push_back({c,{a,b}});//비용, 간선
+    }
+    sort(city.begin(),city.end());//비용 기준으로 정렬
+}
+
+//각 노드의 부모노드 찾기
+int find(int h){
+    if(parent[h]==h){//루트노드이면
+        return h;
+    }
+    parent[h] = find(parent[h]);
+    return parent[h];
+}
+
+//크루스칼 알고리즘
+void kruskal(){
+    int node = 0;
+    int total = 0;
+    for(int i=0;i<city.size();i++){
+        int cost = city[i].first;
+        int x = city[i].second.first;
+        int y = city[i].second.second;
+        
+        //사이클이 아니면 간선추가
+        int px = find(x);
+        int py = find(y);
+        if(px!=py){
+            parent[px] = py;
+            node++;
+            total+=cost;
+        }
+        //간선의 개수를 모두 채웠으면
+        if(node==n-1){
+            break;
+        }
+    }
+    int add = t*(n-2)*(n-1)/2;//추가비용
+    cout<<total+add;//출력
+}
+
+int main(){
+    input();//입력
+    kruskal();//크루스칼 알고리즘
+    return 0;
+}
