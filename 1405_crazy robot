@@ -1,0 +1,51 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+int n;
+double ans = 0;//확률
+double dir[4];//각 방향으로 이동할 확률
+bool visit[29][29];//방문체크
+//동서남북
+int dx[4] = {0,0,1,-1};
+int dy[4] = {1,-1,0,0};
+
+//입력
+void input(){
+    cin>>n;
+    for(int i=0;i<4;i++){
+        cin>>dir[i];
+        dir[i]/=100;//확률로 계산
+    }
+    memset(visit,false,sizeof(visit));//초기화
+}
+
+//깊이 우선탐색
+void dfs(int x,int y,int cnt,double p){
+    //단순 경로를 찾았으면
+    if(cnt==n){
+        ans+=p;
+        return;
+    }
+    
+    //다음 지점 탐색
+    for(int k=0;k<4;k++){
+        int nx = x + dx[k];
+        int ny = y + dy[k];
+        //미방문 지역이면
+        if(visit[nx][ny]==false){
+            visit[nx][ny] = true;//방문체크
+            double new_p = p*dir[k];//확률 계산
+            dfs(nx,ny,cnt+1,new_p);//재귀
+            visit[nx][ny] = false;//방문해제
+        }
+    }
+}
+
+int main(){
+    input();//입력
+    visit[14][14] = true;//맨 처음 지점
+    dfs(14,14,0,1);//위치, 이동 칸수, 누적 확률
+    printf("%.9f",ans);//출력
+    return 0;
+}
