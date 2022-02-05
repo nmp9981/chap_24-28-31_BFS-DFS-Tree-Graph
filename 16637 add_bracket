@@ -1,0 +1,60 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+using namespace std;
+
+int n,middle;
+string s;//수식
+bool selected[21];//기호 선택여부
+int ans = -pow(2,31)+1;
+ 
+//입력
+void input(){
+    cin>>n;
+    cin>>s;
+}
+
+//수식계산
+int cal(int a,int b,char op){
+    switch(op){
+        case '+':
+            a+=b;
+            break;
+        case '-':
+            a-=b;
+            break;
+        case '*':
+            a*=b;
+            break;
+    }
+    return a;
+}
+
+//조합선택
+void dfs(int idx,int res){//인덱스, 누적값
+    //수식계산
+    if(idx>=n){
+        ans = max(ans,res);
+        return;
+    }
+    //기호
+    char op;
+    if(idx==0){
+        op = '+';
+    }else{
+        op = s[idx-1];
+    }
+    //괄호 O
+    if(idx+2<n){
+        middle = cal(s[idx]-'0',s[idx+2]-'0',s[idx+1]);
+        dfs(idx+4,cal(res,middle,op));
+    }
+    //괄호 X
+    dfs(idx+2,cal(res,s[idx]-'0',op));
+}
+int main(){
+    input();//입력
+    dfs(0,0);//조합선택
+    cout<<ans;
+    return 0;
+}
