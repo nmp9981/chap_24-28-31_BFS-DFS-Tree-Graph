@@ -1,0 +1,119 @@
+#include <iostream>
+#include <queue>
+#include <cstring>
+#include <vector>
+using namespace std;
+
+int w,h;
+const int maxi = 1001;
+string build[maxi];//지도
+bool visit[maxi][maxi];//방문체크
+//축이동
+int dx[4] = {-1,1,0,0};
+int dy[4] = {0,0,-1,1};
+
+//초기화
+void init(){
+    memset(visit,false,sizeof(visit));
+    for(int i=0;i<maxi;i++){
+        build[i] = "";
+    }
+}
+
+//입력
+void input(){
+    cin>>w>>h;
+    for(int i=0;i<h;i++){
+        cin>>build[i];
+    }
+}
+
+//빌딩 탈출
+void bfs(){
+    queue<pair<int,int>> fire;
+    queue<pair<int,int>> sang;
+    //첫 지점 넣기
+    for(int i=0;i<h;i++){
+        for(int j=0;j<w;j++){
+            if(build[i][j]=='@'){//상근
+                sang.push({i,j});
+                visit[i][j] = true;//방문체크
+            }
+            if(build[i][j]=='*'){//불
+                fire.push({i,j});
+            }
+        }
+    }
+    int day = 0;//탈출 시간
+    while(true){
+        //불
+        int fire_size = fire.size();
+        for(int i=0;i<fire_size;i++){
+            int fire_x = fire.front().first;
+            int fire_y = fire.front().second;
+            fire.pop();
+            
+            //다음지점
+            for(int k=0;k<4;k++){
+                int nx = fire_x + dx[k];
+                int ny = fire_y + dy[k];
+                //범위내에 드는가?
+                if(nx<0 || nx>=h || ny<0 || ny>=w){
+                    continue;
+                }
+                //벽이나 불이 아니면
+                if(build[nx][ny]!='#' && build[nx][ny]!='*'){
+                    build[nx][ny] = '*';//불번짐
+                    fire.push({nx,ny});
+                }
+            }
+        }
+        //상근
+        int sang_size = sang.size();
+        int escape = 0;//이동 가능 지점
+        for(int i=0;i<sang_size;i++){
+            int sang_x = sang.front().first;
+            int sang_y = sang.front().second;
+            sang.pop();
+            
+            //다음 시간에 탈출
+            if(sang_x==0 || sang_x==h-1 || sang_y==0 || sang_y==w-1){
+                cout<<day+1<<"\n";
+                return;
+            }
+            //다음지점
+            for(int k=0;k<4;k++){
+                int nx = sang_x + dx[k];
+                int ny = sang_y + dy[k];
+                //범위내에 드는가?
+                if(nx<0 || nx>=h || ny<0 || ny>=w){
+                    continue;
+                }
+                //미방문이고 빈공간이면
+                if(visit[nx][ny]==false && build[nx][ny]=='.'){
+                    escape++;//이동 가능 지점 증가
+                    visit[nx][ny] = true;//방문체크
+                    sang.push({nx,ny});
+                }
+            }
+        }
+        //탈출 불가능
+        if(escape==0){
+            cout<<"IMPOSSIBLE"<<"\n";
+            return;
+        }else{
+            day++;
+        }
+    }
+}
+
+int main(){
+    int test;
+    cin>>test;
+    while(test--){
+        init();//초기화
+        input();//입력
+        bfs();//빌딩탈출
+    }
+    return 0;
+}
