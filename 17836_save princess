@@ -1,0 +1,75 @@
+#include <iostream>
+#include <queue>
+#include <cstring>
+#include <algorithm>
+using namespace std;
+
+int n,m,t,ans;
+const int inf =  1e+9;
+const int maxi = 101;
+bool visit[maxi][maxi];//상근 방문여부
+int castle[maxi][maxi];//성
+//축이동
+int dx[4] = {-1,1,0,0};
+int dy[4] = {0,0,-1,1};
+
+//입력
+void input(){
+    cin>>n>>m>>t;
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=m;j++){
+            cin>>castle[i][j];
+        }
+    }
+    memset(visit,false,sizeof(visit));//초기화
+}
+//탐색
+int bfs(){
+    //초기상태
+    queue<pair<pair<int,int>,int>> q;
+    q.push({{1,1},0});
+    visit[1][1] = true;//방문체크
+    
+    int sward = inf;//명검을 이용한 결과
+    while(!q.empty()){
+        int x = q.front().first.first;
+        int y = q.front().first.second;
+        int sec = q.front().second;
+        q.pop();
+            
+        //도착
+        if(x==n && y==m){
+            return min(sward,sec);
+        }
+        //명검발견
+        if(castle[x][y]==2){
+            sward = n-x+m-y+sec;//맨해튼 거리
+        }
+        //다음지점
+        for(int k=0;k<4;k++){
+            int nx = x + dx[k];
+            int ny = y + dy[k];
+            //범위내에 드는가?
+            if(nx<=0 || nx>n || ny<=0 || ny>m){
+                continue;
+            }
+            //벽이 아니고 미방문
+            if(castle[nx][ny]!=1 && visit[nx][ny]==false){
+                visit[nx][ny] = true;//방문체크
+                q.push({{nx,ny},sec+1});
+            }
+        }
+    }
+    return sward;//실패
+}
+int main(){
+    input();//입력
+    //탐색
+    ans = bfs();
+    if(ans>t){
+        cout<<"Fail";
+    }else{
+        cout<<ans;
+    }
+    return 0;
+}
